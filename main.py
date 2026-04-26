@@ -1,9 +1,10 @@
 
-#variables locales
+#variables globales
 hora_de_apertura = 0 
 hora_de_cierre = 0 
 duracion_en_minutos= 0
 citas = []
+lista_medicos = [] 
 
 def menu():
     while True:
@@ -30,21 +31,21 @@ def menu():
 
         match opcion:
             case 1:
-                print(configuracion())
+                configuracion()
             case 2:
-                print(registrar_medicos())
+                registrar_medicos()
             case 3:
-                print(registrar_pacientes())
+                registrar_pacientes()
             case 4:
-                print(crear_lista_de_citas_dia())
+                crear_lista_de_citas_dia()
             case 5:
-                print(pedir_citas())
+                pedir_citas()
             case 6:
-                print(informes())
+                informes()
             case 7:
-                print(ayuda())
+                ayuda()
             case 8:
-                print(acerca_de())
+                acerca_de()
             case 0:
                 break
             case _:
@@ -108,6 +109,160 @@ def configuracion():
             pass #instruccion aprendida gracias a la IA claude, ya que dijo que en python debe haber al mennos una instrucion 
         case _:
             print ("Opcion invalida") 
+
+
+
+
+def registrar_medicos():
+    print ("         CLINICA MEDICA       ")
+    print ("         REGISTRAR MEDICOS   ")
+
+    while True:
+        print("1. Agregar medicos")
+        print("2. Consultar medicos")
+        print("3. Modificar medicos")
+        print("4. Eliminar medicos")
+        print("5. Salir")
+        try:
+            opcion = int (input("OPCION"))
+        except ValueError:
+            print ("El dato a ingresar debe ser un numero.")
+            opcion = -1
+        match opcion:
+            case 1:
+                agregar_medico()
+            case 2:
+                consultar_medico()
+            case 3:
+                modificar_medico()
+            case 4:
+                eliminar_medico()
+            case 5:
+                break
+            case _:
+                print("Opcion invalida")
+
+            
+    def agregar_medico():
+        global lista_medicos,hora_de_apertura,hora_de_cierre
+        while True:
+            dato = input("Ingrese el numero de identificacion (C para cancelar): ").upper()
+            if dato == "C":
+                return 
+            try:
+                id_medico = int(dato) 
+            except ValueError:
+                print("El id del medico debe ser un entero")
+                continue
+            if  id_medico < 1 or id_medico >  999999999:
+                print("El numero de id debe estar entre 1 y 999999999")
+                continue
+            encontrado = False
+            for medico in lista_medicos:   
+                if medico[0] == id_medico:
+                    encontrado = True 
+                    print("EL MEDICO YA ESTA REGISTRADO, NO SE PUEDE AGREGAR")
+                    break
+            if not encontrado:
+                break 
+        
+
+        while True :
+            nombre = input("Nombre: ")
+            if   2 <= len(nombre) <= 20:
+                break 
+            else:
+                print("El nombre debe tener entre 2 y 20 caracteres.")
+                continue 
+        
+        while True :
+            apellido1 = input("Primer apellido: ")
+            if   2 <= len(apellido1) <= 20:
+                break 
+            else:
+                print("El apellido debe tener entre 2 y 20 caracteres.")
+                continue 
+
+        while True :
+            apellido2 = input("Segundo apellido: ")
+            if   2 <= len(apellido2) <= 20:
+                break 
+            else:
+                print("El apellido debe tener entre 2 y 20 caracteres.")
+                continue  
+
+        while True:
+            try:    
+                numero_telefono = int(input("Ingrese el numero telefonico: "))
+            except ValueError:
+                print("El numero debe estar unicamente formado por enteros.")
+                numero_telefono = -1 
+            
+            if len(str(numero_telefono)) == 8:
+                  break
+            else:
+                print("El numero de telefono debe tener 8 digitos exactos. ")
+                continue
+
+        while True:
+            lugar_residencia = input("Ingrese el lugar de residencia: ")
+            if 5 <= len(lugar_residencia) <= 50:
+                break
+            else:
+                print("El lugar de residencia debe estar entre 5 y 50 caracteres. ")
+                continue 
+        
+        while True:
+            correo_electronico = input("Ingrese el correo electronico: ")
+            if "@" in correo_electronico and "." in correo_electronico:
+                break 
+            else:
+                print("Correo inválido. Debe contener '@' y '.'  Ejemplo: nombre@dominio.com")
+                continue 
+        while True: 
+            try:
+                hora_apertura = int(input("Ingrese la hora de apertura (hhmm): "))
+            except ValueError: 
+                print("La hora deben ser numeros enteros.")
+                continue 
+            if hora_apertura >= hora_de_apertura:
+                break 
+            else:
+                print("La hora de apertura del medico debe ser mayor o igual a la hora de apertura de la clinica")
+                continue
+        while True:
+            try:
+                hora_cierre = int(input("Ingrese la hora de cierre: ")) 
+            except ValueError:
+                print ("La hora deben ser numeros enteros.")
+                continue 
+            if hora_cierre <= hora_de_cierre and hora_cierre > hora_apertura:
+                break
+            else:
+                print("La hora de cierre del medico debe ser menor o igual a la  hora de apertura de la clinica.")
+                continue
+
+        medicos = (id_medico,nombre,apellido1,apellido2,numero_telefono,lugar_residencia,correo_electronico,hora_apertura,hora_cierre)
+        print ("    REGISTRAR MEDICOS   ")
+        print ("    AGREGAR MEDICOS     ")
+        print("Identificación del médico: ",id_medico)
+        print("Nombre: ",nombre)
+        print("Apellido 1: ",apellido1)
+        print("Apellido 2: ",apellido2)
+        print("Teléfono: ",numero_telefono)
+        print("Lugar de residencia: ",lugar_residencia)
+        print("Correo electrónico: ",correo_electronico)
+        print("Hora de apertura: ",hora_apertura)
+        print("Hora de cierre: ",hora_cierre)
+        opcion_final = input("OPCION C-CANCELAR A-ACEPTAR").upper()
+        if opcion_final == "A":
+            lista_medicos.append(medicos)
+        elif opcion_final == "C":
+            return
+        else:
+            print("Opción inválida")
+
+
 
 
 

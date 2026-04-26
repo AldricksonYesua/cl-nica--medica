@@ -2,13 +2,10 @@
 
 ## 🔥 Pendientes
 - [ ] Menú principal
-- [ ] Validar opción
-- [ ] Configuración
-- [ ] CRUD médicos
-- [ ] CRUD pacientes
-- [ ] Crear citas
-- [ ] Pedir citas
+- [ ] Quitar los prints a los case del menu (configuracion()) es suficiente
+- [ ] falta validar que el formato de la hora de apertura y cierre esten en formato hhmm en la parte de configuraccion
 
+ 
 ## 🧠 Ideas
 - Usar listas para médicos y pacientes
 - Usar tuplas para datos
