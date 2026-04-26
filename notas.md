@@ -7,9 +7,7 @@
 
  
 ## 🧠 Ideas
-- Usar listas para médicos y pacientes
-- Usar tuplas para datos
-- Validar ID único
+
 
 ## 🐞 Bugs
 - 
@@ -20,4 +18,6 @@
 - [x] Crear repo
 - [x] Ejecutar primer programa 
 
-##Apretar control + shift + v para verlo bonito
+##Apretar control + shift + v para verlo bonito 
+
+##
