@@ -716,3 +716,45 @@ def crear_lista_de_citas_dia():
                 minutos -= 60
             hora_apertura = horas * 100 + minutos
         citas.append([medico[0],lista_horarios])
+def pedir_citas():
+    global lista_medicos, citas
+    print("    CLINICA MEDICA    ")
+    print("    PEDIR CITAS       ") 
+    print(f"{'Identificacion del medico':<30} {'Nombre'}")
+    for medico in lista_medicos:
+        print(f"{medico[0]:<30} {medico[1]} {medico[2]} {medico[3]}")
+    print(F"{'0':<30} Salir")
+
+    while True:
+        opcion = input ("Medico seleccionado: ")
+        if opcion == "0":
+            return 
+        try:
+            opcion_medico = int(opcion)
+        except ValueError:
+            print ("La identificacion del medico debe ser un dato numerico.")
+            continue
+        for medico in lista_medicos:
+            if medico[0] == opcion_medico:
+                print("     CITAS DISPONIBLES    ")
+                for cita in citas:
+                    if cita[0] == opcion_medico:
+                        print(f"Médico: {medico[0]} {medico[1]} {medico[2]} {medico[3]}")
+                        print("Horarios disponibles")
+                        for horario in cita[1]:
+                            if horario [1] == 0:
+                                print(horario[0])
+                            elif horario[1] == -1:
+                                print(f"{horario[0]}**")
+                        print(F"{'0':<30} Salir") 
+                        
+                            
+                        
+
+
+
+
+    
+
+        
+
