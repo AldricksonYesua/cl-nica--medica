@@ -363,14 +363,62 @@ def modificar_medico():
 
                     pass
         if not encontrado:
-            print ("EL MÉDICO NO ESTA REGISTRADO, NO SE PUEDE MODIFICAR")
+            print ("EL MEDICO NO ESTA REGISTRADO, NO SE PUEDE MODIFICAR")
             continue
         
 
 def eliminar_medico():
-
-
-
+    global lista_medicos, citas
+    while True:
+        dato = input("Identificación del médico (C para cancelar): ").upper()
+        if dato == "C":
+            return
+        try:
+            id_medico = int(dato)
+        except ValueError:
+            print("La identificacion debe ser un dato numerico.")
+            continue 
+        encontrado  = False 
+        for medico in lista_medicos:
+            if medico[0] == id_medico:
+                encontrado = True
+                print("Identificación del médico: ",medico[0])
+                print("Nombre: ",medico[1])
+                print("Apellido 1: ",medico[2])
+                print("Apellido 2: ",medico[3])
+                print("Teléfono: ",medico[4])
+                print("Lugar de residencia: ",medico[5])
+                print("Correo electrónico: ",medico[6])
+                print("Hora de apertura: ",medico[7])
+                print("Hora de cierre: ",medico[8])
+                
+                opcion = input("OPCION C-CANCELAR A-ACEPTAR ").upper()
+                if opcion == "A":
+                    #falta verificar si tiene citas asociadas 
+                    opcion2 = input("CONFIRMA LA ELIMINACIÓN (SI/NO)").upper()
+                    if opcion2 == "SI":
+                        tiene_cita = False
+                        for cita in citas:
+                            if cita[0] == id_medico:
+                                for horario in cita[1]:
+                                     if horario [1] != 0:
+                                         tiene_cita = True 
+                                         break
+                                if tiene_cita == True:
+                                    print ("ESTE MÉDICO TIENE CITAS ASOCIADAS, NO SE PUEDE ELIMINAR." )
+                                else:
+                                    lista_medicos.remove(medico)
+                    if opcion2 == "NO":
+                        pass 
+                    
+                if opcion == "C":
+                    pass
+                break                        
+        
+        if not encontrado:
+            print("EL MÉDICO NO ESTA REGISTRADO, NO SE PUEDE ELIMINAR" )
+            continue
+    
 
 
 
