@@ -692,3 +692,27 @@ def eliminar_paciente():
         if not encontrado:
             print("EL PACIENTE NO ESTA REGISTRADO, NO SE PUEDE ELIMINAR" )
             continue
+
+
+
+
+def crear_lista_de_citas_dia():
+    global citas,lista_medicos,hora_de_apertura,hora_de_cierre,duracion_en_minutos
+    if len(citas) > 0:
+        print("NO SE PUEDE CREAR LA LISTA DE CITAS DEL DÍA DEBIDO A QUE HAY CITAS AGENDADAS. PARA CREAR LA LISTA PRIMERO DEBE CANCELAR ESAS CITAS. PUEDE EMITIR UN INFORME DE CITAS QUE LE SIRVA DE REFERENCIA PARA LUEGO HACER ESA CANCELACIÓN.")
+        return 
+
+    for medico in lista_medicos:
+        hora_apertura = medico[7]
+        hora_cierre = medico[8]
+        lista_horarios = []
+        while hora_apertura < hora_cierre:
+            lista_horarios.append((hora_apertura,0))
+            horas = hora_apertura // 100 
+            minutos = hora_apertura % 100 
+            minutos += duracion_en_minutos
+            if minutos >= 60:
+                horas+=1
+                minutos -= 60
+            hora_apertura = horas * 100 + minutos
+        citas.append([medico[0],lista_horarios])
