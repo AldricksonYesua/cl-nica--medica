@@ -5,6 +5,7 @@ hora_de_cierre = 0
 duracion_en_minutos= 0
 citas = []
 lista_medicos = [] 
+lista_pacientes = []
 
 def menu():
     while True:
@@ -419,6 +420,275 @@ def eliminar_medico():
             print("EL MÉDICO NO ESTA REGISTRADO, NO SE PUEDE ELIMINAR" )
             continue
     
+def registrar_pacientes():
+    print ("         CLINICA MEDICA       ")
+    print ("       REGISTRAR PACIENTES   ")
+
+    while True:
+        print("1. Agregar pacientes")
+        print("2. Consultar pacientes")
+        print("3. Modificar pacientes")
+        print("4. Eliminar pacientes")
+        print("5. Fin")
+        try:
+            opcion = int (input("OPCION"))
+        except ValueError:
+            print ("El dato a ingresar debe ser un numero.")
+            opcion = -1
+        match opcion:
+            case 1:
+                agregar_paciente()
+            case 2:
+                consultar_paciente()
+            case 3:
+                modificar_paciente()
+            case 4:
+                eliminar_paciente()
+            case 5:
+                break
+            case _:
+                print("Opcion invalida")
+                continue
 
 
 
+def agregar_paciente():
+    global lista_pacientes
+    while True:
+        dato = input("Ingrese el numero de identificacion (C para cancelar): ").upper()
+        if dato == "C":
+            return 
+        try:
+            id_paciente = int(dato) 
+        except ValueError:
+            print("El id del paciente debe ser un entero")
+            continue
+        if  id_paciente < 1 or id_paciente >  999999999:
+            print("El numero de id debe estar entre 1 y 999999999")
+            continue
+        encontrado = False
+        for paciente in lista_pacientes:   
+            if paciente[0] == id_paciente:
+                encontrado = True 
+                print("EL PACIENTE YA ESTA REGISTRADO, NO SE PUEDE AGREGAR")
+                break
+        if not encontrado:
+            break 
+    
+
+    while True :
+        nombre = input("Nombre: ")
+        if   2 <= len(nombre) <= 20:
+            break 
+        else:
+            print("El nombre debe tener entre 2 y 20 caracteres.")
+            continue 
+    
+    while True :
+        apellido1 = input("Primer apellido: ")
+        if   2 <= len(apellido1) <= 20:
+            break 
+        else:
+            print("El apellido debe tener entre 2 y 20 caracteres.")
+            continue 
+
+    while True :
+        apellido2 = input("Segundo apellido: ")
+        if   2 <= len(apellido2) <= 20:
+            break 
+        else:
+            print("El apellido debe tener entre 2 y 20 caracteres.")
+            continue  
+
+    while True:
+        try:    
+            numero_telefono = int(input("Ingrese el numero telefonico: "))
+        except ValueError:
+            print("El numero debe estar unicamente formado por enteros.")
+            numero_telefono = -1 
+        
+        if len(str(numero_telefono)) == 8:
+                break
+        else:
+            print("El numero de telefono debe tener 8 digitos exactos. ")
+            continue
+
+    while True:
+        lugar_residencia = input("Ingrese el lugar de residencia: ")
+        if 5 <= len(lugar_residencia) <= 50:
+            break
+        else:
+            print("El lugar de residencia debe estar entre 5 y 50 caracteres. ")
+            continue 
+    
+    while True:
+        correo_electronico = input("Ingrese el correo electronico: ")
+        if "@" in correo_electronico and "." in correo_electronico:
+            break 
+        else:
+            print("Correo inválido. Debe contener '@' y '.'  Ejemplo: nombre@dominio.com")
+            continue 
+    
+
+    pacientes = (id_paciente,nombre,apellido1,apellido2,numero_telefono,lugar_residencia,correo_electronico)
+    print ("    REGISTRAR PACIENTES   ")
+    print ("    AGREGAR PACIENTE     ")
+    print("Identificación del paciente: ",id_paciente)
+    print("Nombre: ",nombre)
+    print("Apellido 1: ",apellido1)
+    print("Apellido 2: ",apellido2)
+    print("Teléfono: ",numero_telefono)
+    print("Lugar de residencia: ",lugar_residencia)
+    print("Correo electrónico: ",correo_electronico)
+    opcion_final = input("OPCION C-CANCELAR A-ACEPTAR").upper()
+    if opcion_final == "A":
+        lista_pacientes.append(pacientes)
+    elif opcion_final == "C":
+        return
+    else:
+        print("Opción inválida")
+
+def consultar_paciente():
+    global lista_pacientes 
+
+    print ("    REGISTRAR PACIENTES   ")
+    print ("    CONSULTAR PACIENTE    ") 
+    while True:
+        dato = input("Identificación del paciente (C para cancelar): ").upper()
+        if dato == "C":
+            return
+        try:
+            id_paciente = int(dato)
+        except ValueError:
+            print("La identificacion debe ser un dato numerico.")
+            continue
+        encontrado = False 
+        for paciente in lista_pacientes:
+            if paciente[0] == id_paciente:
+               encontrado = True
+               print("Identificación del paciente: ",paciente[0])
+               print("Nombre: ",paciente[1])
+               print("Apellido 1: ",paciente[2])
+               print("Apellido 2: ",paciente[3])
+               print("Teléfono: ",paciente[4])
+               print("Lugar de residencia: ",paciente[5])
+               print("Correo electrónico: ",paciente[6])
+               break 
+
+        if not encontrado:
+            print ("EL PACIENTE NO ESTA REGISTRADO, NO SE PUEDE CONSULTAR")
+            continue
+        else:
+            input("OPCION A-ACEPTAR ")
+
+
+def modificar_paciente():
+    global lista_pacientes
+    print ("    REGISTRAR PACIENTES   ")
+    print ("    MODIFICAR PACIENTES    ")
+    while True:
+        dato = input("Identificación del paciente (C para cancelar): ").upper()
+        if dato == "C":
+            return
+        try:
+            id_paciente = int(dato)
+        except ValueError:
+            print("La identificacion debe ser un dato numerico.")
+            continue 
+        encontrado = False
+        for paciente in lista_pacientes:
+            if paciente[0] == id_paciente:
+                encontrado = True  
+                print(f"Nombre: {paciente[1]}")
+                nuevo_nombre = input("    MODIFICAR: ")
+                if nuevo_nombre == "":
+                    nuevo_nombre = paciente[1]
+
+                print(f"Apellido 1: {paciente[2]}")
+                nuevo_apellido1 = input("    MODIFICAR: ")
+                if nuevo_apellido1 == "":
+                    nuevo_apellido1 = paciente[2]
+
+                print(f"Apellido 2: {paciente[3]}")
+                nuevo_apellido2 = input("    MODIFICAR: ")
+                if nuevo_apellido2 == "":
+                    nuevo_apellido2 = paciente[3]
+
+                print(f"Teléfono: {paciente[4]}")
+                telefono = input("    MODIFICAR: ")
+                if telefono == "":
+                    telefono = paciente[4]
+
+                print(f"Lugar de residencia: {paciente[5]}")
+                residencia = input("    MODIFICAR: ")
+                if residencia == "":
+                    residencia = paciente[5]
+
+                print(f"Correo electrónico: {paciente[6]}")
+                correo_electronico = input("    MODIFICAR: ")
+                if correo_electronico == "":
+                    correo_electronico = paciente[6]
+
+                opcion = input ("OPCION C-CANCELAR A-ACEPTAR ")
+                if opcion == "A":
+                    nueva_tupla = (id_paciente,nuevo_nombre,nuevo_apellido1,nuevo_apellido2,telefono,residencia,correo_electronico)
+                    indice = lista_pacientes.index(paciente) 
+                    lista_pacientes[indice] = nueva_tupla
+                if opcion == "C":
+
+                    pass
+                break
+        if not encontrado:
+            print ("EL PACIENTE NO ESTA REGISTRADO, NO SE PUEDE MODIFICAR")
+            continue
+
+
+
+def eliminar_paciente():
+    global lista_pacientes, citas
+    while True:
+        dato = input("Identificación del paciente (C para cancelar): ").upper()
+        if dato == "C":
+            return
+        try:
+            id_paciente = int(dato)
+        except ValueError:
+            print("La identificacion debe ser un dato numerico.")
+            continue 
+        encontrado  = False 
+        for paciente in lista_pacientes:
+            if paciente[0] == id_paciente:
+                encontrado = True
+                print("Identificación del paciente: ",paciente[0])
+                print("Nombre: ",paciente[1])
+                print("Apellido 1: ",paciente[2])
+                print("Apellido 2: ",paciente[3])
+                print("Teléfono: ",paciente[4])
+                print("Lugar de residencia: ",paciente[5])
+                print("Correo electrónico: ",paciente[6])
+                
+                opcion = input("OPCION C-CANCELAR A-ACEPTAR ").upper()
+                if opcion == "A":
+                    #falta verificar si tiene citas asociadas 
+                    opcion2 = input("CONFIRMA LA ELIMINACIÓN (SI/NO)").upper()
+                    if opcion2 == "SI":
+                        tiene_cita = False
+                        for cita in citas:
+                                for horario in cita[1]:
+                                     if horario [1] == id_paciente:
+                                         tiene_cita = True 
+                                         break
+                                if tiene_cita == True:
+                                    print ("ESTE PACIENTE TIENE CITAS ASOCIADAS, NO SE PUEDE ELIMINAR." )
+                                else:
+                                    lista_pacientes.remove(paciente)
+                    if opcion2 == "NO":
+                        pass 
+                    
+                if opcion == "C":
+                    pass
+                break                        
+        
+        if not encontrado:
+            print("EL PACIENTE NO ESTA REGISTRADO, NO SE PUEDE ELIMINAR" )
+            continue
