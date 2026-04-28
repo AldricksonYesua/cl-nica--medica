@@ -1,4 +1,4 @@
-
+import os
 #variables globales
 hora_de_apertura = 0 
 hora_de_cierre = 0 
@@ -13,7 +13,7 @@ def menu():
         print ("1. Configuracion")
         print ("2. Registrar medicos")
         print ("3. Registrar pacientes")
-        print ("4. Crear lista de cistas del dia")
+        print ("4. Crear lista de citas del dia")
         print ("5. Pedir citas")
         print ("6. Informes")
         print ("7. Ayuda")
@@ -56,7 +56,7 @@ def menu():
 menu()
 
 def configuracion():
-    global hora_de_apertura,hora_de_cierre,duracion_en_minutos,citas
+    global hora_de_apertura,hora_de_cierre,duracion_en_minutos,citas,lista_medicos
 
     print ("        CLINICA MEDICA      ")
     print ("        CONFIGURACION       ")
@@ -71,12 +71,21 @@ def configuracion():
         except ValueError:
             print("Debe ingresar unicamente valores numericos")
             apertura = -1
+        hh = apertura // 100
+        mm = apertura % 100
+        if hh < 0 or hh > 23 or mm < 0 or mm > 59:
+            print("Hora invalida, formato debe ser hhmm")
+            continue
         try:
             cierre = int(input("Hora de cierre(hhmm):")) 
         except ValueError:
             print("Debe ingresar unicamente valores numericos")
             cierre = -1
-
+        hh = cierre // 100
+        mm = cierre % 100
+        if hh < 0 or hh > 23 or mm < 0 or mm > 59:
+            print("Hora invalida, formato debe ser hhmm")
+            continue
         try:
             duracion = int(input("Duracion en minutos de cada cita(15,20,30):"))
         except ValueError:
@@ -98,11 +107,19 @@ def configuracion():
         case "A":
             opcion = input("AL ACEPTAR ESTA CONFIGURACIÓN BORRA LA LISTA DE CITAS QUE SE TENGA ACTUALMENTE. CONFIRMA LA ACEPTACIÓN (SI/NO)").upper()
             if opcion == "SI":
-                #FALTA VALIDAR EL HORARIO DE MEDICOS CON EL NUEVO HORARIO PERO AUN ESTA CREDA LA FUNCION DE MEDICOS
-                citas.clear() #Para limppiar la funcion y eliminar los datos anteriores
-                hora_de_apertura = apertura
-                hora_de_cierre = cierre
-                duracion_en_minutos = duracion
+                medicos_fuera_rango = []
+                for medico in lista_medicos:
+                    if medico[7] < apertura or medico[8]>cierre:
+                        medicos_fuera_rango.append(medico)
+                if medicos_fuera_rango:
+                    print("No se puede aceptar, los siguientes medicos tienen horarios que no lo permiten.")
+                    for m in medicos_fuera_rango:
+                        print(f"{m[0]} {m[1]} {m[2]} {m[3]}")
+                else:
+                    citas.clear() #Para limppiar la funcion y eliminar los datos anteriores
+                    hora_de_apertura = apertura
+                    hora_de_cierre = cierre
+                    duracion_en_minutos = duracion
             else:
                 pass
 
@@ -123,7 +140,7 @@ def registrar_medicos():
         print("2. Consultar medicos")
         print("3. Modificar medicos")
         print("4. Eliminar medicos")
-        print("5. Salir")
+        print("0. Salir")
         try:
             opcion = int (input("OPCION"))
         except ValueError:
@@ -138,7 +155,7 @@ def registrar_medicos():
                 modificar_medico()
             case 4:
                 eliminar_medico()
-            case 5:
+            case 0:
                 break
             case _:
                 print("Opcion invalida")
@@ -739,15 +756,125 @@ def pedir_citas():
                 print("     CITAS DISPONIBLES    ")
                 for cita in citas:
                     if cita[0] == opcion_medico:
-                        print(f"Médico: {medico[0]} {medico[1]} {medico[2]} {medico[3]}")
-                        print("Horarios disponibles")
-                        for horario in cita[1]:
-                            if horario [1] == 0:
-                                print(horario[0])
-                            elif horario[1] == -1:
-                                print(f"{horario[0]}**")
-                        print(F"{'0':<30} Salir") 
-                        
+                       
+                        while True:
+                            print(f"Médico: {medico[0]} {medico[1]} {medico[2]} {medico[3]}")
+                            print("Horarios disponibles")
+                            for horario in cita[1]:
+                                if horario [1] == 0:
+                                    horas = horario[0] // 100 
+                                    minutos = horario[0] % 100
+                                    print(f"{horas:02d}:{minutos:02d}" )
+                                elif horario[1] == -1:
+                                    horas = horario[0] // 100
+                                    minutos = horario [0] % 100
+                                    print(f"{horas:02d}:{minutos:02d}**")
+                            print("Salir")
+                            dato = input("Identificacion del paciente: ").upper()
+                            if dato == "C":
+                                break
+                            try:
+                                id_paciente = int(dato)
+                            except ValueError:
+                                print("La identificacion deben ser datos numericos.")
+                                continue
+                            if id_paciente == -1:
+                                try:
+                                    ingrese_horario = int(input("Horario seleccionado (hhmm): "))
+                                except ValueError:
+                                    print("DEBEN SER DATOS NUMERICOS.")
+                                    continue
+                                for j in range(len(cita[1])):
+                                   
+                                    if cita[1][j][0] == ingrese_horario:
+                                        if cita[1][j][1] == 0:
+                                            cita[1][j] = (cita[1][j][0],-1)#si esta habilitado, se desabilita
+                                            break
+                                        elif cita[1][j][1] == -1:
+                                            cita[1][j] = (cita[1][j][0],0) #estaba deshabilitado y ahora se habilita
+                                            break
+                                        else:
+                                            print("NO SE PUEDE DESHABILITAR, TIENE UN PACIENTE ASIGNADO.")#otro caso: esta ocupado
+                                continue #vuelve al inicio del while       
+                            encontrado = False
+                            for paciente in lista_pacientes:
+                                if paciente[0] == id_paciente: 
+                                    encontrado = True
+                                    print(f"{paciente[1]} {paciente[2]} {paciente[3]}")
+                                    break
+                            if not encontrado: 
+                                print("EL PACIENTE NO ESTA REGISTRADO.")
+                                continue
+                            tiene_citas = False
+                            for second_cita in citas:
+                                for paciente in second_cita[1]:
+                                    if paciente [1] == id_paciente:
+                                        tiene_citas = True  
+                                        horas = paciente[0] // 100
+                                        minutos = paciente[0] % 100
+                                        print("Horario seleccionado: ", f"{horas:02d}:{minutos:02d}")
+                                        if second_cita[0] != opcion_medico:
+                                            for otro_medico in lista_medicos:
+                                                if otro_medico[0] == second_cita [0]:  
+                                                     print(f"Médico: {otro_medico[0]} {otro_medico[1]} {otro_medico[2]} {otro_medico[3]}")
+                                        opcion = input("Cancelar cita (s/n).").upper()
+                                        if opcion == "S":
+                                            for j in range(len(second_cita[1])):
+                                                if second_cita[1][j][1] == id_paciente:
+                                                    second_cita[1][j] = (second_cita[1][j][0],0)
+                                                    break
+                                        if opcion == "N":
+                                            break
+                                if  tiene_citas:
+                                    break      
+                            if not tiene_citas:
+                                    try:
+                                        horario_seleccionado = int(input("Horario seleccionado (hhmm): "))
+                                    except ValueError:
+                                        print("LA HORA DEBE ESTAR COMPUESTA POR DATOS NUMERICOS.")
+                                        continue
+                                    encontro_horario = False
+                                    for j in range (len(cita[1])):
+                                        if cita[1][j][0] == horario_seleccionado:
+                                            encontro_horario = True 
+                                            if cita[1][j][1] == 0:
+                                                cita [1][j] = (cita[1][j][0],id_paciente)
+                                                break
+                                            elif cita[1][j][1] == -1:
+                                                print("ESE HORARIO NO ESTA DISPONIBLE.")
+                                                break 
+                                            else:
+                                                print("ESE HORARIO YA ESTA OCUPADO.")
+                                                break
+                                    
+
+                                    if not encontro_horario:
+                                        print("ESE HORARIO NO EXISTE.")
+
+
+
+
+def ayuda():
+     os.startfile("manual_de_usuario_clinica_medica.pdf")# Abre el manual de usuario en formato PDF usando el visor predeterminado de Windows
+
+
+
+
+
+
+
+def acerca_de():
+    # Muestra informacion general del programa
+    print("CLINICA MEDICA")
+    print("Version: 1.0")
+    print("Fecha de creacion: 24/4/2026")
+    print("Autor: Aldrickson Diaz Tijerino")
+
+
+
+
+
+
                             
                         
 
