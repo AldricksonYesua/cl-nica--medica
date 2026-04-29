@@ -162,7 +162,7 @@ def registrar_medicos():
 
             
 def agregar_medico():
-    global lista_medicos,hora_de_apertura,hora_de_cierre
+    global lista_medicos,lista_pacientes,hora_de_apertura,hora_de_cierre
     while True:
         dato = input("Ingrese el numero de identificacion (C para cancelar): ").upper()
         if dato == "C":
@@ -176,14 +176,19 @@ def agregar_medico():
             print("El numero de id debe estar entre 1 y 999999999")
             continue
         encontrado = False
-        for medico in lista_medicos:   
+        for medico in lista_medicos:
             if medico[0] == id_medico:
-                encontrado = True 
+                encontrado = True
                 print("EL MEDICO YA ESTA REGISTRADO, NO SE PUEDE AGREGAR")
                 break
         if not encontrado:
-            break 
-    
+            for paciente in lista_pacientes:
+                if paciente[0] == id_medico:
+                    encontrado = True
+                    print("ESE ID YA PERTENECE A UN PACIENTE.")
+                    break
+        if not encontrado:
+            break  
 
     while True :
         nombre = input("Nombre: ")
@@ -243,17 +248,28 @@ def agregar_medico():
         except ValueError: 
             print("La hora deben ser numeros enteros.")
             continue 
+        hh = hora_apertura // 100
+        mm = hora_apertura % 100
+        if hh < 0 or hh > 23 or mm < 0 or mm > 59:
+            print("Hora invalida, formato debe ser hhmm")
+            continue
         if hora_apertura >= hora_de_apertura:
             break 
         else:
             print("La hora de apertura del medico debe ser mayor o igual a la hora de apertura de la clinica")
             continue
+        
     while True:
         try:
             hora_cierre = int(input("Ingrese la hora de cierre: ")) 
         except ValueError:
             print ("La hora deben ser numeros enteros.")
             continue 
+        hh = hora_cierre // 100
+        mm = hora_cierre % 100
+        if hh < 0 or hh > 23 or mm < 0 or mm > 59:
+            print("Hora invalida, formato debe ser hhmm")
+            continue
         if hora_cierre <= hora_de_cierre and hora_cierre > hora_apertura:
             break
         else:
@@ -317,7 +333,7 @@ def consultar_medico():
             input("OPCION A-ACEPTAR ")
 
 def modificar_medico():
-    global lista_medicos
+    global lista_medicos,citas
     print ("    REGISTRAR MEDICOS   ")
     print ("    MODIFICAR MEDICOS    ")
     while True:
@@ -352,6 +368,12 @@ def modificar_medico():
                 telefono = input("    MODIFICAR: ")
                 if telefono == "":
                     telefono = medico[4]
+                else:
+                    try:
+                        telefono = int(telefono)
+                    except ValueError:
+                        print("El telefono debe ser numerico.")
+                        telefono = medico[4] 
 
                 print(f"Lugar de residencia: {medico[5]}")
                 residencia = input("    MODIFICAR: ")
@@ -362,17 +384,45 @@ def modificar_medico():
                 correo_electronico = input("    MODIFICAR: ")
                 if correo_electronico == "":
                     correo_electronico = medico[6]
-
-                print(f"Hora de apertura {medico[7]}")
-                hora_apertura = input("    MODIFICAR: ")
-                if hora_apertura == "":
-                    hora_apertura = medico[7]
-
-                print(f"Hora de cierre {medico[8]}")
-                hora_cierre = input("    MODIFICAR: ")
-                if hora_cierre == "":
-                    hora_cierre = medico[8]
-                opcion = input ("OPCION C-CANCELAR A-ACEPTAR ")
+                if citas:
+                    print(f"Hora de apertura {medico[7]} (no modificable, hay citas activas)")
+                    hora_apertura = medico[7] 
+                else:
+                    print(f"Hora de apertura {medico[7]}")
+                    hora_apertura = input("    MODIFICAR: ")
+                    if hora_apertura == "":
+                        hora_apertura = medico[7]
+                    else:
+                        try:
+                            hora_apertura = int(hora_apertura)
+                            hh = hora_apertura // 100
+                            mm = hora_apertura % 100
+                            if hh < 0 or hh > 23 or mm < 0 or mm > 59:
+                                print("Hora invalida, formato debe ser hhmm")
+                                hora_apertura = medico[7]
+                        except ValueError:
+                            print("La hora debe ser numerica.")
+                            hora_apertura = medico[7]
+                if citas:
+                    print(f"Hora de cierre {medico[8]} (no modificable, hay citas activas)")
+                    hora_cierre = medico[8] 
+                else:
+                    print(f"Hora de cierre {medico[8]}")
+                    hora_cierre = input("    MODIFICAR: ")
+                    if hora_cierre == "":
+                        hora_cierre = medico[8]
+                    else:
+                        try:
+                            hora_cierre = int(hora_cierre)
+                            hh = hora_cierre // 100
+                            mm = hora_cierre % 100
+                            if hh < 0 or hh > 23 or mm < 0 or mm > 59:
+                                print("Hora invalida, formato debe ser hhmm")
+                                hora_cierre = medico[8]
+                        except ValueError:
+                            print("La hora debe ser numerica.")
+                            hora_cierre = medico[8]
+                opcion = input ("OPCION C-CANCELAR A-ACEPTAR ").upper()
                 if opcion == "A":
                     nueva_tupla = (id_medico,nuevo_nombre,nuevo_apellido1,nuevo_apellido2,telefono,residencia,correo_electronico,hora_apertura,hora_cierre)
                     indice = lista_medicos.index(medico) 
@@ -387,6 +437,8 @@ def modificar_medico():
 
 def eliminar_medico():
     global lista_medicos, citas
+    print("    REGISTRAR MEDICOS   ")
+    print("    ELIMINAR MEDICOS    ")
     while True:
         dato = input("Identificación del médico (C para cancelar): ").upper()
         if dato == "C":
@@ -419,7 +471,7 @@ def eliminar_medico():
                         for cita in citas:
                             if cita[0] == id_medico:
                                 for horario in cita[1]:
-                                     if horario [1] != 0:
+                                     if horario [1] > 0:
                                          tiene_cita = True 
                                          break
                                 if tiene_cita == True:
@@ -850,6 +902,91 @@ def pedir_citas():
 
                                     if not encontro_horario:
                                         print("ESE HORARIO NO EXISTE.")
+
+
+def informes():
+    while True:
+        print("1. Informe de citas por medico") 
+        print("2. Informe de citas por hora") 
+        print("3. Informe de citas por paciente") 
+        print("4. Estadística de ocupación por médico ")     
+        print("5. Gráfico (circular) de ocupación por médico")    
+        print("0. Salir")
+        try:
+            opcion = int(input("OPCION "))
+        except ValueError:
+            print("DEBE INGRESAR UN DATO NUMERICO.")
+            continue
+        match opcion:
+            case 1:
+                informe_citas_medico()
+            case 2:
+                informe_citas_hora()
+            case 3:
+                informe_citas_paciente()
+            case 4:
+                estadistica_ocupacion()
+            case 5:
+                grafico_ocupacion_medico()
+            case 0:
+                break
+
+
+def informe_citas_medico():
+    global citas, lista_medicos,lista_pacientes
+    while True:
+        opcion = input("DESEA VER LA INFORMACION DE UNO O TODOS LOS MEDCOS: T = todos, U = uno, C para cancelar: ").upper()
+        if opcion == "U":
+            try:
+                id_medico  = int(input("Ingrese la identificacion del medico: "))
+            except ValueError:
+                print("DEBE INGRESAR UN DATO NUMERICO")
+                continue
+            encontrado = False
+            for cita in citas:
+                if cita[0] == id_medico:
+                    encontrado = True
+                    for medico in lista_medicos :
+                        if medico[0] == id_medico:
+                            print(f"Médico: {medico[1]} {medico[2]} {medico[3]}")
+                            for horario in cita[1]:
+                                if horario [1] > 0:
+                                    hh = horario[0] // 100
+                                    mm = horario[0] % 100
+                                    for paciente in lista_pacientes:
+                                        if paciente[0] == horario[1]:
+                                            print(f"  {hh:02d}:{mm:02d} — {paciente[1]} {paciente[2]} {paciente[3]}")
+            if not encontrado:
+                print("EL MEDICO NO POSEE CITAS PARA MOSTRAR")
+                continue 
+        elif opcion == "T":
+            for cita in citas:
+                for medico in lista_medicos:
+                    if cita[0]==medico[0]:
+                        print(f"Medico: {medico[1]} {medico[2]} {medico[3]}")
+                        for horario in cita[1]:
+                            if horario[1] > 0:
+                                hh = horario[0] // 100
+                                mm = horario[0] % 100
+                                for paciente in lista_pacientes:
+                                    if paciente[0] == horario[1]:
+                                        
+                                        print(f"  {hh:02d}:{mm:02d} — {paciente[1]} {paciente[2]} {paciente[3]}")
+        elif opcion == "C":
+            break
+        else:
+            print("OPCION INVALIDA.")
+
+
+def informe_citas_hora():
+    
+
+
+
+
+            
+
+
 
 
 
