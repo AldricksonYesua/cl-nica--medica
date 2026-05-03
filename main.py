@@ -64,6 +64,7 @@ def configuracion():
     print ("        CONFIGURACION       ")
     print ("Horario de la clinica")
 
+    # loop independiente para apertura: solo repite apertura si hay error
     while True:
         apertura = input("Hora de apertura(hhmm):").upper()
         if apertura == "C":
@@ -72,35 +73,42 @@ def configuracion():
             apertura = int(apertura)
         except ValueError:
             print("Debe ingresar unicamente valores numericos")
-            apertura = -1
+            continue
         hh = apertura // 100
         mm = apertura % 100
         if hh < 0 or hh > 23 or mm < 0 or mm > 59:
             print("Hora invalida, formato debe ser hhmm")
             continue
+        break  # apertura valida, sale de este loop
+
+    # loop independiente para cierre: solo repite cierre si hay error
+    while True:
         try:
-            cierre = int(input("Hora de cierre(hhmm):")) 
+            cierre = int(input("Hora de cierre(hhmm):"))
         except ValueError:
             print("Debe ingresar unicamente valores numericos")
-            cierre = -1
+            continue
         hh = cierre // 100
         mm = cierre % 100
         if hh < 0 or hh > 23 or mm < 0 or mm > 59:
             print("Hora invalida, formato debe ser hhmm")
             continue
+        if cierre <= apertura:
+            print("Error: la hora de cierre debe ser mayor a la hora de apertura")
+            continue
+        break  # cierre valido, sale de este loop
+
+    # loop independiente para duracion: solo repite duracion si hay error
+    while True:
         try:
             duracion = int(input("Duracion en minutos de cada cita(15,20,30):"))
         except ValueError:
             print("Debe ingresar unicamente valores numericos")
-            duracion = -1
-        if apertura >= cierre:
-            print("Error: la hora de apertura debe ser menor a la hora de cierre")
             continue
-        if duracion not in (15,20,30):
+        if duracion not in (15, 20, 30):
             print("Error: la duracion debe estar entre (15,20,30)")
-            continue 
-        else:
-            break 
+            continue
+        break  # duracion valida, sale de este loop
 
     
     opcion = str(input("OPCION C-CANCELAR A-ACEPTAR")).upper() #sirve para detectar c o C lo descrubri investigando por internet 
