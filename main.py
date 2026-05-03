@@ -275,7 +275,7 @@ def agregar_medico():
         if hora_cierre <= hora_de_cierre and hora_cierre > hora_apertura:
             break
         else:
-            print("La hora de cierre del medico debe ser menor o igual a la  hora de apertura de la clinica.")
+            print("La hora de cierre del medico debe ser menor o igual a la hora de cierre de la clinica.")
             continue
 
     medicos = (id_medico,nombre,apellido1,apellido2,numero_telefono,lugar_residencia,correo_electronico,hora_apertura,hora_cierre)
@@ -290,13 +290,15 @@ def agregar_medico():
     print("Correo electrónico: ",correo_electronico)
     print("Hora de apertura: ",hora_apertura)
     print("Hora de cierre: ",hora_cierre)
-    opcion_final = input("OPCION C-CANCELAR A-ACEPTAR").upper()
-    if opcion_final == "A":
-        lista_medicos.append(medicos)
-    elif opcion_final == "C":
-        return
-    else:
-        print("Opción inválida")
+    while True:  # repite hasta que el usuario ingrese A o C correctamente
+        opcion_final = input("OPCION C-CANCELAR A-ACEPTAR").upper()
+        if opcion_final == "A":
+            lista_medicos.append(medicos)
+            break
+        elif opcion_final == "C":
+            return
+        else:
+            print("Opción inválida, ingrese A para aceptar o C para cancelar.")
 
 
 def consultar_medico():
@@ -501,7 +503,6 @@ def eliminar_medico():
                 
                 opcion = input("OPCION C-CANCELAR A-ACEPTAR ").upper()
                 if opcion == "A":
-                    #falta verificar si tiene citas asociadas 
                     opcion2 = input("CONFIRMA LA ELIMINACIÓN (SI/NO)").upper()
                     if opcion2 == "SI":
                         tiene_cita = False
@@ -652,13 +653,15 @@ def agregar_paciente():
     print("Teléfono: ",numero_telefono)
     print("Lugar de residencia: ",lugar_residencia)
     print("Correo electrónico: ",correo_electronico)
-    opcion_final = input("OPCION C-CANCELAR A-ACEPTAR").upper()
-    if opcion_final == "A":
-        lista_pacientes.append(pacientes)
-    elif opcion_final == "C":
-        return
-    else:
-        print("Opción inválida")
+    while True:  # repite hasta que el usuario ingrese A o C correctamente
+        opcion_final = input("OPCION C-CANCELAR A-ACEPTAR").upper()
+        if opcion_final == "A":
+            lista_pacientes.append(pacientes)
+            break
+        elif opcion_final == "C":
+            return
+        else:
+            print("Opción inválida, ingrese A para aceptar o C para cancelar.")
 
 def consultar_paciente():
     global lista_pacientes 
@@ -822,7 +825,6 @@ def eliminar_paciente():
                 
                 opcion = input("OPCION C-CANCELAR A-ACEPTAR ").upper()
                 if opcion == "A":
-                    #falta verificar si tiene citas asociadas 
                     opcion2 = input("CONFIRMA LA ELIMINACIÓN (SI/NO)").upper()
                     if opcion2 == "SI":
                         tiene_cita = False
@@ -914,8 +916,10 @@ def pedir_citas():
         except ValueError:
             print ("La identificacion del medico debe ser un dato numerico.")
             continue
+        medico_encontrado = False  # bandera para saber si el id ingresado existe
         for medico in lista_medicos:
             if medico[0] == opcion_medico:
+                medico_encontrado = True  # se encontro el medico en la lista
                 print("     CITAS DISPONIBLES    ")
                 for cita in citas:
                     if cita[0] == opcion_medico:
@@ -1013,6 +1017,9 @@ def pedir_citas():
 
                                     if not encontro_horario:
                                         print("ESE HORARIO NO EXISTE.")
+
+        if not medico_encontrado:  # si el id no corresponde a ningun medico, avisa al usuario
+            print("EL MÉDICO NO ESTÁ REGISTRADO.")
 
 
 def generar_pdf(titulo, lineas, nombre_archivo):
@@ -1270,7 +1277,11 @@ def informe_citas_paciente():
         filtro = input("Desea buscar segun: H = horario especifico, T = todos los horarios: ").upper()
         hora_buscada = 0  # se define aqui para evitar error si filtro no es H
         if filtro == "H":
-            hora_buscada = int(input("Ingrese la hora que desea consultar (hhmm): "))
+            try:
+                hora_buscada = int(input("Ingrese la hora que desea consultar (hhmm): "))
+            except ValueError:
+                print("DEBE INGRESAR UN DATO NUMERICO.")
+                continue  # regresa al inicio del while, pide U/T/C de nuevo
 
         if opcion == "U":
             dato = input("Ingrese el id del paciente (C para cancelar): ").upper()
