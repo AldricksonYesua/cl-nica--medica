@@ -506,16 +506,16 @@ def eliminar_medico():
                     opcion2 = input("CONFIRMA LA ELIMINACIÓN (SI/NO)").upper()
                     if opcion2 == "SI":
                         tiene_cita = False
-                        for cita in citas:
+                        for cita in citas:  # recorre todas las citas buscando las del medico
                             if cita[0] == id_medico:
                                 for horario in cita[1]:
-                                     if horario [1] > 0:
-                                         tiene_cita = True 
-                                         break
-                                if tiene_cita == True:
-                                    print ("ESTE MÉDICO TIENE CITAS ASOCIADAS, NO SE PUEDE ELIMINAR." )
-                                else:
-                                    lista_medicos.remove(medico)
+                                    if horario[1] > 0:  # valor > 0 significa paciente asignado
+                                        tiene_cita = True
+                                        break
+                        if tiene_cita:  # la verificacion va FUERA del for, no dentro
+                            print("ESTE MÉDICO TIENE CITAS ASOCIADAS, NO SE PUEDE ELIMINAR.")
+                        else:
+                            lista_medicos.remove(medico)  # solo elimina si no tiene citas activas
                     if opcion2 == "NO":
                         pass 
                     
