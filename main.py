@@ -157,7 +157,7 @@ def configuracion():
                     if medico[7] < apertura or medico[8] > cierre:
                         medicos_fuera_rango.append(medico)
                 if medicos_fuera_rango:
-                    print("No se puede aceptar, los siguientes medicos tienen horarios que no lo permiten.")
+                    print("NO SE PUEDE ACEPTAR ESTA OPERACION PORQUE LOS SIGUIENTES MEDICOS TIENEN HORARIOS FUERA DEL HORARIO DE LA CLINICA:")
                     for m in medicos_fuera_rango:
                         print(f"{m[0]} {m[1]} {m[2]} {m[3]}")
                 else:
@@ -937,7 +937,8 @@ def pedir_citas():
         print("NO HAY LISTA DE CITAS CREADA. PRIMERO EJECUTE LA OPCION 4 DEL MENU.")
         return
     print("    CLINICA MEDICA    ")
-    print("    PEDIR CITAS       ") 
+    print("    PEDIR CITAS       ")
+    print("LISTA DE MEDICOS")
     print(f"{'Identificacion del medico':<30} {'Nombre'}")
     for medico in lista_medicos:
         print(f"{medico[0]:<30} {medico[1]} {medico[2]} {medico[3]}")
@@ -1154,7 +1155,7 @@ def informe_citas_medico():
                     encontrado = True
                     for medico in copia_medicos:
                         if medico[0] == id_medico:
-                            lineas.append(f"Medico: {medico[1]} {medico[2]} {medico[3]}")
+                            lineas.append(f"MEDICO {medico[0]} {medico[2]} {medico[3]} {medico[1]}")
                             lineas.append(f"{'HORARIO':<10} {'ID.PACIENTE':<15} NOMBRE DEL PACIENTE")
                             for horario in cita[1]:
                                 if filtro == "T" or horario[1] > 0:
@@ -1185,7 +1186,7 @@ def informe_citas_medico():
             for cita in citas:
                 for medico in copia_medicos:
                     if cita[0] == medico[0]:
-                        lineas.append(f"Medico: {medico[1]} {medico[2]} {medico[3]}")
+                        lineas.append(f"MEDICO {medico[0]} {medico[2]} {medico[3]} {medico[1]}")
                         lineas.append(f"{'HORARIO':<10} {'ID.PACIENTE':<15} NOMBRE DEL PACIENTE")
                         for horario in cita[1]:
                             if filtro == "T" or horario[1] > 0:
@@ -1455,7 +1456,7 @@ def estadistica_ocupacion():
                         porcentaje_ocupacion = (ocupadas / disponibles) * 100
                         porcentaje_libres = (libres / disponibles) * 100
                         porcentaje_reservadas = (reservadas / disponibles) * 100
-                        lineas.append(f"{medico[0]:<10} {medico[1]} {medico[2]} {medico[3]:<30} {disponibles:<13} {ocupadas} {porcentaje_ocupacion:.0f}%         {libres} {porcentaje_libres:.0f}%   {reservadas} {porcentaje_reservadas:.0f}%")
+                        lineas.append(f"{medico[0]:<10} {(medico[2]+' '+medico[3]+' '+medico[1]):<30} {disponibles:<13} {ocupadas} {porcentaje_ocupacion:.0f}%         {libres} {porcentaje_libres:.0f}%   {reservadas} {porcentaje_reservadas:.0f}%")
                     else:
                         print("EL MEDICO NO TIENE HORARIOS REGISTRADOS.")
             if not encontrado:
@@ -1487,9 +1488,9 @@ def estadistica_ocupacion():
                     porcentaje_ocupacion = (ocupadas / disponibles) * 100
                     porcentaje_libres = (libres / disponibles) * 100
                     porcentaje_reservadas = (reservadas / disponibles) * 100
-                    lineas.append(f"{medico[0]:<10} {medico[1]} {medico[2]} {medico[3]:<30} {disponibles:<13} {ocupadas} {porcentaje_ocupacion:.0f}%         {libres} {porcentaje_libres:.0f}%   {reservadas} {porcentaje_reservadas:.0f}%")
+                    lineas.append(f"{medico[0]:<10} {(medico[2]+' '+medico[3]+' '+medico[1]):<30} {disponibles:<13} {ocupadas} {porcentaje_ocupacion:.0f}%         {libres} {porcentaje_libres:.0f}%   {reservadas} {porcentaje_reservadas:.0f}%")
                 else:
-                    lineas.append(f"{medico[0]:<10} {medico[1]} {medico[2]} {medico[3]:<30} SIN HORARIOS REGISTRADOS.")
+                    lineas.append(f"{medico[0]:<10} {(medico[2]+' '+medico[3]+' '+medico[1]):<30} SIN HORARIOS REGISTRADOS.")
             for linea in lineas:  # muestra el informe en consola
                 print(linea)
             generar_pdf("ESTADISTICA DE OCUPACION POR MEDICO", lineas, "estadistica_ocupacion.pdf")
@@ -1622,7 +1623,10 @@ def grafico_ocupacion_medico():
 
 
 def ayuda():
-     os.startfile("manual_de_usuario_clinica_medica.pdf")# Abre el manual de usuario en formato PDF usando el visor predeterminado de Windows
+    try:
+        os.startfile("manual_de_usuario_clinica_medica.pdf")  # abre el manual con el visor PDF del sistema
+    except FileNotFoundError:
+        print("NO SE ENCONTRO EL ARCHIVO manual_de_usuario_clinica_medica.pdf")
 
 
 
