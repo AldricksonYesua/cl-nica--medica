@@ -1,4 +1,5 @@
 import os
+import matplotlib.pyplot as plt
 #variables globales
 hora_de_apertura = 0 
 hora_de_cierre = 0 
@@ -1234,7 +1235,99 @@ def estadistica_ocupacion():
 
 
 def grafico_ocupacion_medico():
-    
+    global lista_medicos,lista_pacientes,citas
+    copia_medicos = lista_medicos[:]
+    for i in range (len(lista_medicos)):
+        for j in range(i+1,len(lista_medicos)):
+            if copia_medicos[i][2] > copia_medicos[j][2]:
+                copia_medicos[i], copia_medicos[j] = copia_medicos[j], copia_medicos[i]
+            elif copia_medicos[i][2] == copia_medicos[j][2]:
+                if copia_medicos[i][3] > copia_medicos[j][3]:
+                    copia_medicos[i] , copia_medicos[j] = copia_medicos[j],copia_medicos[i]
+                elif copia_medicos[i][3] == copia_medicos[j][3]:
+                    if copia_medicos[i][1] >copia_medicos[j][1]:
+                        copia_medicos[i],copia_medicos[j] = copia_medicos[j], copia_medicos[i]
+    while True:
+        opcion = input("U = un medico, T = todos, C = cancelar: ").upper()
+        if opcion == "C":
+            return   
+        if opcion == "U":
+            dato = input("Ingrese el id del medico (C para cancelar): ")
+            if dato  == "C":
+                continue
+            try:
+                id_medico = int(dato)
+            except ValueError:
+                print("DEBEN SER DATOS NUMERICOS.") 
+                continue 
+            encontrado = False
+            for medico in copia_medicos:
+                if medico[0] == id_medico:
+                    encontrado = True
+                    disponibles = 0 
+                    ocupadas = 0 
+                    libres = 0 
+                    reservadas = 0 
+                    for cita in citas:
+                        if cita[0] == id_medico:
+                            for horario in cita[1]:
+                                disponibles += 1
+                                if horario[1] > 0:
+                                    ocupadas += 1
+                                elif horario[1] == 0:
+                                    libres+=1
+                                elif horario[1] == -1:
+                                    reservadas +=1
+                    if disponibles > 0:            
+                        porcentaje_ocupacion = (ocupadas/disponibles) * 100
+                        porcentaje_libres = (libres / disponibles) * 100
+                        porcentaje_reservadas = (reservadas / disponibles) * 100
+                        sizes = [ocupadas, libres, reservadas]
+                        labels = ['Citas ocupadas', 'Citas libres', 'Citas reservadas']
+                        colors = ['green', 'red', 'peachpuff']
+
+                        plt.figure()
+                        plt.pie(sizes, labels=labels, autopct='%1.1f%%', colors=colors)
+                        plt.title(f"Ocupacion para: {medico[2]} {medico[3]} {medico[1]}\nTotal de citas disponibles: {disponibles}")
+                        plt.show()
+                    else :
+                          print("EL MEDICO NO TIENE HORARIOS REGISTRADOS.")
+            if not encontrado:
+                print("EL MEDICO NO ESTA REGISTRADO.")
+                continue
+        elif opcion == "T":
+            for medico in copia_medicos:
+                disponibles = 0 
+                ocupadas = 0
+                libres = 0 
+                reservadas = 0 
+                for cita in citas:
+                    if cita[0] == medico[0]:
+                        for horario in cita[1]:
+                            disponibles +=1
+                            if horario[1] > 0:
+                                ocupadas+=1
+                            elif horario[1] == 0 :
+                                libres +=1
+                            elif horario[1]==-1:
+                                reservadas+=1
+                if disponibles > 0:
+                    porcentaje_ocupacion = (ocupadas / disponibles) * 100
+                    porcentaje_libres = (libres / disponibles) * 100
+                    porcentaje_reservadas = (reservadas / disponibles) * 100
+                    sizes = [ocupadas, libres, reservadas]
+                    labels = ['Citas ocupadas', 'Citas libres', 'Citas reservadas']
+                    colors = ['green', 'red', 'peachpuff']
+
+                    plt.figure()
+                    plt.pie(sizes, labels=labels, autopct='%1.1f%%', colors=colors)
+                    plt.title(f"Ocupacion para: {medico[2]} {medico[3]} {medico[1]}\nTotal de citas disponibles: {disponibles}")
+                    plt.show()
+                else:
+                    print(f"{medico[1]} {medico[2]} {medico[3]} — SIN HORARIOS REGISTRADOS.")
+        else:
+            print("OPCION INVALIDA.")
+
 
 
 def ayuda():
