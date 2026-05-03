@@ -146,15 +146,15 @@ def configuracion():
         break  # duracion valida, sale de este loop
 
     
-    opcion = str(input("OPCION C-CANCELAR A-ACEPTAR")).upper() # .upper() convierte la entrada a mayuscula para aceptar c o C
-   
-    match opcion:
-        case "A":
-            opcion = input("AL ACEPTAR ESTA CONFIGURACION BORRA LA LISTA DE CITAS QUE SE TENGA ACTUALMENTE. CONFIRMA LA ACEPTACION (SI/NO)").upper()
-            if opcion == "SI":
+    # loop que repite hasta que el usuario ingrese A o C correctamente
+    while True:
+        opcion = str(input("OPCION C-CANCELAR A-ACEPTAR")).upper() # .upper() convierte la entrada a mayuscula para aceptar c o C
+        if opcion == "A":
+            confirmacion = input("AL ACEPTAR ESTA CONFIGURACION BORRA LA LISTA DE CITAS QUE SE TENGA ACTUALMENTE. CONFIRMA LA ACEPTACION (SI/NO)").upper()
+            if confirmacion == "SI":
                 medicos_fuera_rango = []
                 for medico in lista_medicos:
-                    if medico[7] < apertura or medico[8]>cierre:
+                    if medico[7] < apertura or medico[8] > cierre:
                         medicos_fuera_rango.append(medico)
                 if medicos_fuera_rango:
                     print("No se puede aceptar, los siguientes medicos tienen horarios que no lo permiten.")
@@ -165,13 +165,11 @@ def configuracion():
                     hora_de_apertura = apertura
                     hora_de_cierre = cierre
                     duracion_en_minutos = duracion
-            else:
-                pass
-
-        case "C":
-            pass # pass es necesario porque case "C" no requiere hacer nada, pero el bloque no puede quedar vacio 
-        case _:
-            print ("Opcion invalida") 
+            break  # sale del loop tanto si confirmo SI como si confirmo NO
+        elif opcion == "C":
+            break  # usuario cancelo, sale sin guardar
+        else:
+            print("Opcion invalida, ingrese A para aceptar o C para cancelar.") 
 
 
 
@@ -260,17 +258,15 @@ def agregar_medico():
             continue  
 
     while True:
-        try:    
+        try:
             numero_telefono = int(input("Ingrese el numero telefonico: "))
         except ValueError:
             print("El numero debe estar unicamente formado por enteros.")
-            numero_telefono = -1 
-        
+            continue  # evita el doble mensaje al saltar directamente al siguiente intento
         if len(str(numero_telefono)) == 8:
-                break
+            break
         else:
             print("El numero de telefono debe tener 8 digitos exactos. ")
-            continue
 
     while True:
         lugar_residencia = input("Ingrese el lugar de residencia: ")
@@ -278,16 +274,16 @@ def agregar_medico():
             break
         else:
             print("El lugar de residencia debe estar entre 5 y 50 caracteres. ")
-            continue 
-    
+            continue
+
     while True:
         correo_electronico = input("Ingrese el correo electronico: ")
         if "@" in correo_electronico and "." in correo_electronico:
-            break 
+            break
         else:
             print("Correo invalido. Debe contener '@' y '.'  Ejemplo: nombre@dominio.com")
-            continue 
-    while True: 
+            continue
+    while True:
         try:
             hora_apertura = int(input("Ingrese la hora de apertura (hhmm): "))
         except ValueError: 
@@ -657,17 +653,15 @@ def agregar_paciente():
             continue  
 
     while True:
-        try:    
+        try:
             numero_telefono = int(input("Ingrese el numero telefonico: "))
         except ValueError:
             print("El numero debe estar unicamente formado por enteros.")
-            numero_telefono = -1 
-        
+            continue  # evita el doble mensaje al saltar directamente al siguiente intento
         if len(str(numero_telefono)) == 8:
-                break
+            break
         else:
             print("El numero de telefono debe tener 8 digitos exactos. ")
-            continue
 
     while True:
         lugar_residencia = input("Ingrese el lugar de residencia: ")
@@ -675,16 +669,15 @@ def agregar_paciente():
             break
         else:
             print("El lugar de residencia debe estar entre 5 y 50 caracteres. ")
-            continue 
-    
+            continue
+
     while True:
         correo_electronico = input("Ingrese el correo electronico: ")
         if "@" in correo_electronico and "." in correo_electronico:
-            break 
+            break
         else:
             print("Correo invalido. Debe contener '@' y '.'  Ejemplo: nombre@dominio.com")
-            continue 
-    
+            continue
 
     pacientes = (id_paciente,nombre,apellido1,apellido2,numero_telefono,lugar_residencia,correo_electronico)
     print ("    REGISTRAR PACIENTES   ")
@@ -828,7 +821,7 @@ def modificar_paciente():
                     else:
                         print("Correo invalido. Debe contener '@' y '.'  Ejemplo: nombre@dominio.com")
 
-                opcion = input ("OPCION C-CANCELAR A-ACEPTAR ")
+                opcion = input ("OPCION C-CANCELAR A-ACEPTAR ").upper()  # .upper() para aceptar minusculas
                 if opcion == "A":
                     nueva_tupla = (id_paciente,nuevo_nombre,nuevo_apellido1,nuevo_apellido2,telefono,residencia,correo_electronico)
                     indice = lista_pacientes.index(paciente) 
@@ -1068,20 +1061,25 @@ def pedir_citas():
 def generar_pdf(titulo, lineas, nombre_archivo):
     # Crea un documento PDF usando la biblioteca fpdf2
     # titulo: encabezado del informe, lineas: lista de texto a escribir, nombre_archivo: nombre del PDF a guardar
-    pdf = FPDF()
+    pdf = FPDF(orientation="L")  # orientacion horizontal para que las tablas con muchas columnas no se corten
     pdf.add_page()  # agrega una pagina en blanco al documento
+    pdf.set_margins(10, 10, 10)  # margenes: izquierda, superior, derecha en mm
 
     pdf.set_font("Helvetica", "B", 14)  # fuente en negrita para el titulo principal
-    pdf.cell(0, 10, "CLINICA MEDICA", ln=True, align="C")  # titulo centrado en la pagina
+    # new_x="LMARGIN", new_y="NEXT" reemplaza ln=True que esta deprecado en fpdf2 v2.5.2+
+    pdf.cell(0, 10, "CLINICA MEDICA", align="C", new_x="LMARGIN", new_y="NEXT")
 
     pdf.set_font("Helvetica", "B", 11)  # fuente ligeramente mas pequena para el subtitulo
-    pdf.cell(0, 8, titulo, ln=True, align="C")  # nombre del informe centrado
+    pdf.cell(0, 8, titulo, align="C", new_x="LMARGIN", new_y="NEXT")  # nombre del informe centrado
 
     pdf.ln(4)  # espacio en blanco entre el encabezado y el contenido
 
-    pdf.set_font("Helvetica", size=9)  # fuente normal para el cuerpo del informe
+    pdf.set_font("Courier", size=8)  # fuente monoespaciada para que las columnas queden alineadas
+    ancho_pagina = pdf.w - pdf.l_margin - pdf.r_margin  # calcula el ancho disponible restando los margenes
     for linea in lineas:
-        pdf.multi_cell(0, 6, linea)  # escribe cada linea; multi_cell hace salto de linea automatico si es muy larga
+        # si la linea es muy larga se recorta para evitar el error "not enough horizontal space"
+        linea_recortada = linea[:200]
+        pdf.cell(ancho_pagina, 5, linea_recortada, new_x="LMARGIN", new_y="NEXT")
 
     pdf.output(nombre_archivo)  # guarda el archivo PDF en disco con el nombre indicado
     os.startfile(nombre_archivo)  # abre el PDF automaticamente con el visor predeterminado de Windows
@@ -1114,6 +1112,8 @@ def informes():
                 grafico_ocupacion_medico()
             case 0:
                 break
+            case _:
+                print("Opcion invalida.")  # avisa si el numero ingresado no corresponde a ninguna opcion
 
 
 def informe_citas_medico():
@@ -1142,7 +1142,11 @@ def informe_citas_medico():
             except ValueError:
                 print("DEBE INGRESAR UN DATO NUMERICO")
                 continue
-            filtro = input("Ver horarios: O = solo los ocupados, T = todos ").upper()
+            while True:  # repite hasta obtener O o T valido
+                filtro = input("Ver horarios: O = solo los ocupados, T = todos ").upper()
+                if filtro in ("O", "T"):
+                    break
+                print("Opcion invalida. Ingrese O o T.")
             encontrado = False
             lineas = []  # lista donde se acumula el contenido del informe para el PDF
             for cita in citas:
@@ -1172,7 +1176,11 @@ def informe_citas_medico():
             generar_pdf("INFORME DE CITAS POR MEDICO", lineas, "informe_citas_medico.pdf")
 
         elif opcion == "T":
-            filtro = input("Ver horarios: O = solo los ocupados, T = todos ").upper()
+            while True:  # repite hasta obtener O o T valido
+                filtro = input("Ver horarios: O = solo los ocupados, T = todos ").upper()
+                if filtro in ("O", "T"):
+                    break
+                print("Opcion invalida. Ingrese O o T.")
             lineas = []  # lista donde se acumula el contenido del informe para el PDF
             for cita in citas:
                 for medico in copia_medicos:
@@ -1232,7 +1240,11 @@ def informe_citas_hora():
             except ValueError:
                 print("DEBE INGRESAR UN DATO NUMERICO")
                 continue
-            filtro = input("Ver horarios: O = solo los ocupados, T = todos ").upper()
+            while True:  # repite hasta obtener O o T valido
+                filtro = input("Ver horarios: O = solo los ocupados, T = todos ").upper()
+                if filtro in ("O", "T"):
+                    break
+                print("Opcion invalida. Ingrese O o T.")
             encontrado = False
             hh = hora_buscada // 100
             mm = hora_buscada % 100
@@ -1262,7 +1274,11 @@ def informe_citas_hora():
             generar_pdf("INFORME DE CITAS POR HORA", lineas, "informe_citas_hora.pdf")
 
         elif opcion == "T":
-            filtro = input("Ver horarios: O = solo los ocupados, T = todos ").upper()
+            while True:  # repite hasta obtener O o T valido
+                filtro = input("Ver horarios: O = solo los ocupados, T = todos ").upper()
+                if filtro in ("O", "T"):
+                    break
+                print("Opcion invalida. Ingrese O o T.")
             lineas = []  # lista donde se acumula el contenido del informe para el PDF
             lineas.append(f"{'HORARIO':<10} {'ID.MEDICO':<12} {'NOMBRE DEL MEDICO':<30} {'ID.PACIENTE':<12} NOMBRE DEL PACIENTE")
             for hora_actual in horas_unicas:
@@ -1407,7 +1423,7 @@ def estadistica_ocupacion():
         if opcion == "C":
             return   
         if opcion == "U":
-            dato = input("Ingrese el id del medico (C para cancelar): ")
+            dato = input("Ingrese el id del medico (C para cancelar): ").upper()  # .upper() para aceptar c minuscula
             if dato == "C":
                 continue
             try:
@@ -1510,7 +1526,7 @@ def grafico_ocupacion_medico():
             return
 
         if opcion == "U":
-            dato = input("Ingrese el id del medico (C para cancelar): ")
+            dato = input("Ingrese el id del medico (C para cancelar): ").upper()  # .upper() para aceptar c minuscula
             if dato == "C":
                 continue
             try:
