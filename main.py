@@ -934,44 +934,73 @@ def informes():
 
 def informe_citas_medico():
     global citas, lista_medicos,lista_pacientes
+
+
+    #crear una copia para lista medicos, para no modificarla directamente y que afecte el codigo entero
+
+    copia_medicos = lista_medicos[:]
+    #ordenamiento burbuja
+    for i in range(len(copia_medicos)):
+        for j in range(i+1,len(copia_medicos)):
+            if copia_medicos[i][2] > copia_medicos[j][2]:
+                copia_medicos[i],copia_medicos[j] = copia_medicos[j],copia_medicos[i]#se realiza el intercambio
+            elif copia_medicos[i][2] == copia_medicos[j][2]:
+                if copia_medicos[i][3] > copia_medicos[j][3]:
+                    copia_medicos[i],copia_medicos[j] = copia_medicos[j], copia_medicos[i]
+                elif copia_medicos[i][3] == copia_medicos[j][3]:
+                    if copia_medicos[i][1] > copia_medicos[j][1]:
+                        copia_medicos [i], copia_medicos[j] = copia_medicos[j], copia_medicos [i] 
     while True:
-        opcion = input("DESEA VER LA INFORMACION DE UNO O TODOS LOS MEDCOS: T = todos, U = uno, C para cancelar: ").upper()
+        opcion = input("DESEA VER LA INFORMACION DE UNO O TODOS LOS MEDICOS: T = todos, U = uno, C para cancelar: ").upper()
+        
         if opcion == "U":
             try:
                 id_medico  = int(input("Ingrese la identificacion del medico: "))
             except ValueError:
                 print("DEBE INGRESAR UN DATO NUMERICO")
                 continue
+            filtro = input("Ver horarios: O =  solo los ocupados, T = todos ").upper()
             encontrado = False
             for cita in citas:
                 if cita[0] == id_medico:
                     encontrado = True
-                    for medico in lista_medicos :
+                    for medico in copia_medicos :
                         if medico[0] == id_medico:
                             print(f"Médico: {medico[1]} {medico[2]} {medico[3]}")
                             for horario in cita[1]:
-                                if horario [1] > 0:
+                                if filtro == "T" or horario[1]>0:
                                     hh = horario[0] // 100
                                     mm = horario[0] % 100
-                                    for paciente in lista_pacientes:
-                                        if paciente[0] == horario[1]:
-                                            print(f"  {hh:02d}:{mm:02d} — {paciente[1]} {paciente[2]} {paciente[3]}")
+                                    if horario[1] > 0:
+                                        for paciente in lista_pacientes:
+                                            if paciente[0] == horario[1]:
+                                                print(f"  {hh:02d}:{mm:02d} — {paciente[1]} {paciente[2]} {paciente[3]}")
+                                    elif horario [1] == -1:
+                                        print(f"  {hh:02d}:{mm:02d}**")
+                                    elif horario[1] == 0:
+                                        print(f"  {hh:02d}:{mm:02d}")
             if not encontrado:
                 print("EL MEDICO NO POSEE CITAS PARA MOSTRAR")
                 continue 
         elif opcion == "T":
+            filtro = input("Ver horarios: O =  solo los ocupados, T = todos ").upper()
             for cita in citas:
-                for medico in lista_medicos:
+                for medico in copia_medicos:
                     if cita[0]==medico[0]:
                         print(f"Medico: {medico[1]} {medico[2]} {medico[3]}")
                         for horario in cita[1]:
-                            if horario[1] > 0:
+                            if filtro == "T" or horario[1] > 0  :
                                 hh = horario[0] // 100
                                 mm = horario[0] % 100
-                                for paciente in lista_pacientes:
-                                    if paciente[0] == horario[1]:
-                                        
-                                        print(f"  {hh:02d}:{mm:02d} — {paciente[1]} {paciente[2]} {paciente[3]}")
+                                if horario[1] > 0:
+                                    for paciente in lista_pacientes:
+                                        if paciente[0] == horario[1]:                                
+                                            print(f"  {hh:02d}:{mm:02d} — {paciente[1]} {paciente[2]} {paciente[3]}")
+                                elif horario[1] == -1:
+                                    print(f"  {hh:02d}:{mm:02d}**")
+                                elif horario[1] == 0:
+                                    print(f"  {hh:02d}:{mm:02d}")
+
         elif opcion == "C":
             break
         else:
@@ -979,16 +1008,233 @@ def informe_citas_medico():
 
 
 def informe_citas_hora():
+    global citas, lista_medicos,lista_pacientes 
+    horas_unicas = []
+    for cita in citas:
+        for horario in cita[1]:
+            hora = horario[0]
+            encontrado = False
+            for h in horas_unicas:
+                if h == hora:
+                    encontrado = True
+                    break 
+            if not encontrado:
+                horas_unicas.append(hora) 
+    for i in range(len(horas_unicas)):
+        for j in range(i+1, len(horas_unicas)):
+            if horas_unicas[i] > horas_unicas[j]:
+                horas_unicas[i],  horas_unicas[j] = horas_unicas[j],horas_unicas[i]
+    while True :
+        opcion = input("DESEA VER LA INFORMACION POR HORARIO: T = todos, U = uno, C para cancelar: ").upper()
+
+        if opcion == "U":
+            try:
+                hora_buscada  = int(input("Ingrese la hora: "))
+            except ValueError:
+                print("DEBE INGRESAR UN DATO NUMERICO")
+                continue
+            filtro = input("Ver horarios: O =  solo los ocupados, T = todos ").upper()
+            encontrado = False
+            hh = hora_buscada // 100
+            mm = hora_buscada % 100
+            print (f"{hh:02d}:{mm:02d}")
+            for cita in citas:
+                for horario in cita[1]:
+                    if horario[0] == hora_buscada:
+                        encontrado = True 
+                        if filtro == "T" or horario[1] > 0:
+                            for medico in lista_medicos:
+                                if medico[0] == cita[0]:
+                                    if horario[1] > 0:
+                                        for paciente in lista_pacientes:
+                                            if paciente[0] == horario[1]:
+                                                print(f"  {medico[0]:<10} {medico[1]} {medico[2]} {medico[3]:<25} {paciente[0]:<10} {paciente[1]} {paciente[2]} {paciente[3]}")
+                                    elif horario[1] == -1:
+                                         print(f"** {medico[0]:<10} {medico[1]} {medico[2]} {medico[3]}")
+                                    elif horario[1] == 0:
+                                        print(f" {medico[0]:<10} {medico[1]} {medico[2]} {medico[3]}")
+            if not encontrado:
+                print("Esa hora no existe en el sistema.")
+                continue
+
+        elif opcion == "T":
+            filtro = input("Ver horarios: O =  solo los ocupados, T = todos ").upper()
+            for hora_actual in horas_unicas:
+                hh = hora_actual // 100 
+                mm = hora_actual % 100
+                print(f"{hh:02d}:{mm:02d}")
+                for cita in citas:
+                    for horario in cita[1]:
+                        if horario[0] == hora_actual:
+                            if filtro == "T" or horario[1] > 0:
+                                for medico in lista_medicos:
+                                    if medico[0] == cita[0]:
+                                        if horario[1] > 0:
+                                            for paciente in lista_pacientes:
+                                                if paciente[0] == horario[1]:
+                                                    print(f"  {medico[0]:<10} {medico[1]} {medico[2]} {medico[3]:<25} {paciente[0]:<10} {paciente[1]} {paciente[2]} {paciente[3]}")
+                                        elif horario[1] == -1:
+                                             print(f"** {medico[0]:<10} {medico[1]} {medico[2]} {medico[3]}")
+                                        elif horario[1] == 0:
+                                             print(f"{medico[0]:<10} {medico[1]} {medico[2]} {medico[3]}")
+
+        elif opcion == "C":
+            break
+        else:
+            print("OPCION INVALIDA.") 
+
+
+
+def informe_citas_paciente():
+    global citas, lista_medicos,lista_pacientes
+    copia_pacientes = lista_pacientes [:]
+    for i in range(len(copia_pacientes)):
+        for j in range(i+1,len(copia_pacientes)):
+            if copia_pacientes[i][2] > copia_pacientes[j][2]:
+                copia_pacientes[i], copia_pacientes[j] = copia_pacientes[j], copia_pacientes[i]
+            elif copia_pacientes[i][2] == copia_pacientes[j] [2]:
+                if copia_pacientes[i][3]>copia_pacientes[j][3]:
+                      copia_pacientes[i], copia_pacientes[j] = copia_pacientes[j], copia_pacientes[i] 
+                elif copia_pacientes[i][3] == copia_pacientes[j] [3]:
+                    if copia_pacientes[i][1] > copia_pacientes[j][1]:
+                        copia_pacientes[i], copia_pacientes[j] = copia_pacientes[j],copia_pacientes[i]
+                        
+    while True:
+        opcion = input("U = un paciente, T = todos, C = cancelar: ").upper()
+        if opcion == "C":
+            return
     
+        filtro = input("Desea buscar segun: H = horario especifico, T = todos los horarios: ").upper()
+        if filtro == "H":
+            hora_buscada = int(input("Ingrese la hora que desea consultar (hhmm): "))
+    
+        if opcion == "U":
+            dato = input("Ingrese el id del paciente (C para cancelar): ").upper()
+            if dato == "C":
+                continue
+            try:
+                id_paciente = int(dato)
+            except ValueError:
+                print("DEBE SER UN DATO NUMERICO.")
+                continue
+            encontrado = False
+            for cita in citas:
+                for horario in cita[1]:
+                    if horario[1] == id_paciente:
+                        encontrado = True
+                        if filtro == "T" or horario[0] == hora_buscada:
+                            for medico in lista_medicos:
+                                if medico[0] == cita[0]:
+                                    hh = horario[0] // 100
+                                    mm = horario[0] % 100
+                                    for paciente in lista_pacientes:
+                                        if paciente[0] == id_paciente:
+                                            print(f"{paciente[0]:<12} {paciente[1]} {paciente[2]} {paciente[3]:<25}  {hh:02d}:{mm:02d} {medico[0]:<10} {medico[1]} {medico[2]} {medico[3]}")
+            if not encontrado:
+                print("EL PACIENTE NO TIENE CITAS REGISTRADAS.")
+
+        elif opcion == "T":
+            for paciente in copia_pacientes:
+                for cita in citas:
+                    for horario in cita[1]:
+                        if horario[1] == paciente[0]:
+                            if filtro == "T" or horario[0] == hora_buscada:
+                                for medico in lista_medicos:
+                                    if medico[0] == cita[0]:
+                                        hh = horario[0] // 100
+                                        mm = horario[0] % 100 
+                                        print(f"{paciente[0]:<12} {paciente[1]} {paciente[2]} {paciente[3]:<25}  {hh:02d}:{mm:02d} {medico[0]:<10} {medico[1]} {medico[2]} {medico[3]}")
+
+
+        else:
+            print("OPCION INVALIDA.")
+        
+def estadistica_ocupacion():
+    global lista_medicos,lista_pacientes,citas
+    copia_medicos = lista_medicos[:]
+    for i in range (len(lista_medicos)):
+        for j in range(i+1,len(lista_medicos)):
+            if copia_medicos[i][2] > copia_medicos[j][2]:
+                copia_medicos[i], copia_medicos[j] = copia_medicos[j], copia_medicos[i]
+            elif copia_medicos[i][2] == copia_medicos[j][2]:
+                if copia_medicos[i][3] > copia_medicos[j][3]:
+                    copia_medicos[i] , copia_medicos[j] = copia_medicos[j],copia_medicos[i]
+                elif copia_medicos[i][3] == copia_medicos[j][3]:
+                    if copia_medicos[i][1] >copia_medicos[j][1]:
+                        copia_medicos[i],copia_medicos[j] = copia_medicos[j], copia_medicos[i]
+    while True:
+        opcion = input("U = un medico, T = todos, C = cancelar: ").upper()
+        if opcion == "C":
+            return   
+        if opcion == "U":
+            dato = input("Ingrese el id del medico (C para cancelar): ")
+            if dato  == "C":
+                continue
+            try:
+                id_medico = int(dato)
+            except ValueError:
+                print("DEBEN SER DATOS NUMERICOS.") 
+                continue 
+            encontrado = False
+            for medico in copia_medicos:
+                if medico[0] == id_medico:
+                    encontrado = True
+                    disponibles = 0 
+                    ocupadas = 0 
+                    libres = 0 
+                    reservadas = 0 
+                    for cita in citas:
+                        if cita[0] == id_medico:
+                            for horario in cita[1]:
+                                disponibles += 1
+                                if horario[1] > 0:
+                                    ocupadas += 1
+                                elif horario[1] == 0:
+                                    libres+=1
+                                elif horario[1] == -1:
+                                    reservadas +=1
+                    if disponibles > 0:            
+                        porcentaje_ocupacion = (ocupadas/disponibles) * 100
+                        porcentaje_libres = (libres / disponibles) * 100
+                        porcentaje_reservadas = (reservadas / disponibles) * 100
+                        print(f"{medico[0]:<10} {medico[1]} {medico[2]} {medico[3]:<25} {disponibles:<14} {ocupadas} {porcentaje_ocupacion:.0f}%   {libres} {porcentaje_libres:.0f}%   {reservadas} {porcentaje_reservadas:.0f}%")
+                    else :
+                          print("EL MEDICO NO TIENE HORARIOS REGISTRADOS.")
+            if not encontrado:
+                print("EL MEDICO NO ESTA REGISTRADO.")
+                continue
+        elif opcion == "T":
+            for medico in copia_medicos:
+                disponibles = 0 
+                ocupadas = 0
+                libres = 0 
+                reservadas = 0 
+                for cita in citas:
+                    if cita[0] == medico[0]:
+                        for horario in cita[1]:
+                            disponibles +=1
+                            if horario[1] > 0:
+                                ocupadas+=1
+                            elif horario[1] == 0 :
+                                libres +=1
+                            elif horario[1]==-1:
+                                reservadas+=1
+                if disponibles > 0:
+                    porcentaje_ocupacion = (ocupadas / disponibles) * 100
+                    porcentaje_libres = (libres / disponibles) * 100
+                    porcentaje_reservadas = (reservadas / disponibles) * 100
+                    print(f"{medico[0]:<10} {medico[1]} {medico[2]} {medico[3]:<25} {disponibles:<14} {ocupadas} {porcentaje_ocupacion:.0f}%   {libres} {porcentaje_libres:.0f}%   {reservadas} {porcentaje_reservadas:.0f}%")
+                else:
+                    print(f"{medico[0]:<10} {medico[1]} {medico[2]} {medico[3]:<25} SIN HORARIOS REGISTRADOS.")
+        else:
+            print("OPCION INVALIDA.")
 
 
 
 
-            
 
-
-
-
+def grafico_ocupacion_medico():
+    
 
 
 def ayuda():
@@ -1006,7 +1252,6 @@ def acerca_de():
     print("Version: 1.0")
     print("Fecha de creacion: 24/4/2026")
     print("Autor: Aldrickson Diaz Tijerino")
-
 
 
 
