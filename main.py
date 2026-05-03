@@ -1,5 +1,6 @@
 import os
 import matplotlib.pyplot as plt
+from fpdf import FPDF
 #variables globales
 hora_de_apertura = 0 
 hora_de_cierre = 0 
@@ -54,7 +55,7 @@ def menu():
                 print ("Opcion invalida") 
 
 
-menu()
+
 
 def configuracion():
     global hora_de_apertura,hora_de_cierre,duracion_en_minutos,citas,lista_medicos
@@ -351,40 +352,75 @@ def modificar_medico():
             if medico[0] == id_medico:
                 encontrado = True  
                 print(f"Nombre: {medico[1]}")
-                nuevo_nombre = input("    MODIFICAR: ")
-                if nuevo_nombre == "":
-                    nuevo_nombre = medico[1]
+                while True:
+                    nuevo_nombre = input("    MODIFICAR: ")
+                    if nuevo_nombre == "":
+                        nuevo_nombre = medico[1]
+                        break
+                    elif 2 <= len(nuevo_nombre) <= 20:
+                        break
+                    else:
+                        print("El nombre debe tener entre 2 y 20 caracteres.")
 
                 print(f"Apellido 1: {medico[2]}")
-                nuevo_apellido1 = input("    MODIFICAR: ")
-                if nuevo_apellido1 == "":
-                    nuevo_apellido1 = medico[2]
+                while True:
+                    nuevo_apellido1 = input("    MODIFICAR: ")
+                    if nuevo_apellido1 == "":
+                        nuevo_apellido1 = medico[2]
+                        break
+                    elif 2 <= len(nuevo_apellido1) <= 20:
+                        break
+                    else:
+                        print("El apellido debe tener entre 2 y 20 caracteres.")
 
                 print(f"Apellido 2: {medico[3]}")
-                nuevo_apellido2 = input("    MODIFICAR: ")
-                if nuevo_apellido2 == "":
-                    nuevo_apellido2 = medico[3]
+                while True:
+                    nuevo_apellido2 = input("    MODIFICAR: ")
+                    if nuevo_apellido2 == "":
+                        nuevo_apellido2 = medico[3]
+                        break
+                    elif 2 <= len(nuevo_apellido2) <= 20:
+                        break
+                    else:
+                        print("El apellido debe tener entre 2 y 20 caracteres.")
 
                 print(f"Teléfono: {medico[4]}")
-                telefono = input("    MODIFICAR: ")
-                if telefono == "":
-                    telefono = medico[4]
-                else:
-                    try:
-                        telefono = int(telefono)
-                    except ValueError:
-                        print("El telefono debe ser numerico.")
-                        telefono = medico[4] 
+                while True:
+                    telefono = input("    MODIFICAR: ")
+                    if telefono == "":
+                        telefono = medico[4]
+                        break
+                    else:
+                        try:
+                            telefono = int(telefono)
+                            if len(str(telefono)) == 8:
+                                break
+                            else:
+                                print("El telefono debe tener 8 digitos exactos.")
+                        except ValueError:
+                            print("El telefono debe ser numerico.")
 
                 print(f"Lugar de residencia: {medico[5]}")
-                residencia = input("    MODIFICAR: ")
-                if residencia == "":
-                    residencia = medico[5]
+                while True:
+                    residencia = input("    MODIFICAR: ")
+                    if residencia == "":
+                        residencia = medico[5]
+                        break
+                    elif 5 <= len(residencia) <= 50:
+                        break
+                    else:
+                        print("El lugar de residencia debe tener entre 5 y 50 caracteres.")
 
                 print(f"Correo electrónico: {medico[6]}")
-                correo_electronico = input("    MODIFICAR: ")
-                if correo_electronico == "":
-                    correo_electronico = medico[6]
+                while True:
+                    correo_electronico = input("    MODIFICAR: ")
+                    if correo_electronico == "":
+                        correo_electronico = medico[6]
+                        break
+                    elif "@" in correo_electronico and "." in correo_electronico:
+                        break
+                    else:
+                        print("Correo invalido. Debe contener '@' y '.'  Ejemplo: nombre@dominio.com")
                 if citas:
                     print(f"Hora de apertura {medico[7]} (no modificable, hay citas activas)")
                     hora_apertura = medico[7] 
@@ -499,7 +535,7 @@ def registrar_pacientes():
         print("2. Consultar pacientes")
         print("3. Modificar pacientes")
         print("4. Eliminar pacientes")
-        print("5. Fin")
+        print("0. Fin")
         try:
             opcion = int (input("OPCION"))
         except ValueError:
@@ -514,7 +550,7 @@ def registrar_pacientes():
                 modificar_paciente()
             case 4:
                 eliminar_paciente()
-            case 5:
+            case 0:
                 break
             case _:
                 print("Opcion invalida")
@@ -542,6 +578,12 @@ def agregar_paciente():
                 encontrado = True 
                 print("EL PACIENTE YA ESTA REGISTRADO, NO SE PUEDE AGREGAR")
                 break
+        if not encontrado:
+            for medico in lista_medicos:   # verifica que el ID no pertenezca a un medico
+                if medico[0] == id_paciente:
+                    encontrado = True
+                    print("ESE ID YA PERTENECE A UN MEDICO.")
+                    break
         if not encontrado:
             break 
     
@@ -670,34 +712,75 @@ def modificar_paciente():
             if paciente[0] == id_paciente:
                 encontrado = True  
                 print(f"Nombre: {paciente[1]}")
-                nuevo_nombre = input("    MODIFICAR: ")
-                if nuevo_nombre == "":
-                    nuevo_nombre = paciente[1]
+                while True:
+                    nuevo_nombre = input("    MODIFICAR: ")
+                    if nuevo_nombre == "":
+                        nuevo_nombre = paciente[1]
+                        break
+                    elif 2 <= len(nuevo_nombre) <= 20:
+                        break
+                    else:
+                        print("El nombre debe tener entre 2 y 20 caracteres.")
 
                 print(f"Apellido 1: {paciente[2]}")
-                nuevo_apellido1 = input("    MODIFICAR: ")
-                if nuevo_apellido1 == "":
-                    nuevo_apellido1 = paciente[2]
+                while True:
+                    nuevo_apellido1 = input("    MODIFICAR: ")
+                    if nuevo_apellido1 == "":
+                        nuevo_apellido1 = paciente[2]
+                        break
+                    elif 2 <= len(nuevo_apellido1) <= 20:
+                        break
+                    else:
+                        print("El apellido debe tener entre 2 y 20 caracteres.")
 
                 print(f"Apellido 2: {paciente[3]}")
-                nuevo_apellido2 = input("    MODIFICAR: ")
-                if nuevo_apellido2 == "":
-                    nuevo_apellido2 = paciente[3]
+                while True:
+                    nuevo_apellido2 = input("    MODIFICAR: ")
+                    if nuevo_apellido2 == "":
+                        nuevo_apellido2 = paciente[3]
+                        break
+                    elif 2 <= len(nuevo_apellido2) <= 20:
+                        break
+                    else:
+                        print("El apellido debe tener entre 2 y 20 caracteres.")
 
                 print(f"Teléfono: {paciente[4]}")
-                telefono = input("    MODIFICAR: ")
-                if telefono == "":
-                    telefono = paciente[4]
+                while True:
+                    telefono = input("    MODIFICAR: ")
+                    if telefono == "":
+                        telefono = paciente[4]
+                        break
+                    else:
+                        try:
+                            telefono = int(telefono)
+                            if len(str(telefono)) == 8:
+                                break
+                            else:
+                                print("El telefono debe tener 8 digitos exactos.")
+                        except ValueError:
+                            print("El telefono debe ser numerico.")
 
                 print(f"Lugar de residencia: {paciente[5]}")
-                residencia = input("    MODIFICAR: ")
-                if residencia == "":
-                    residencia = paciente[5]
+                while True:
+                    residencia = input("    MODIFICAR: ")
+                    if residencia == "":
+                        residencia = paciente[5]
+                        break
+                    elif 5 <= len(residencia) <= 50:
+                        break
+                    else:
+                        print("El lugar de residencia debe tener entre 5 y 50 caracteres.")
 
                 print(f"Correo electrónico: {paciente[6]}")
-                correo_electronico = input("    MODIFICAR: ")
-                if correo_electronico == "":
-                    correo_electronico = paciente[6]
+                while True:
+                    correo_electronico = input("    MODIFICAR: ")
+                    if correo_electronico == "":
+                        correo_electronico = paciente[6]
+                        break
+                    elif "@" in correo_electronico and "." in correo_electronico:
+                        break
+                    else:
+                        print("Correo invalido. Debe contener '@' y '.'  Ejemplo: nombre@dominio.com")
 
                 opcion = input ("OPCION C-CANCELAR A-ACEPTAR ")
                 if opcion == "A":
@@ -748,10 +831,12 @@ def eliminar_paciente():
                                      if horario [1] == id_paciente:
                                          tiene_cita = True 
                                          break
-                                if tiene_cita == True:
-                                    print ("ESTE PACIENTE TIENE CITAS ASOCIADAS, NO SE PUEDE ELIMINAR." )
-                                else:
-                                    lista_pacientes.remove(paciente)
+                                if tiene_cita:
+                                    break
+                        if tiene_cita == True:
+                            print ("ESTE PACIENTE TIENE CITAS ASOCIADAS, NO SE PUEDE ELIMINAR." )
+                        else:
+                            lista_pacientes.remove(paciente)
                     if opcion2 == "NO":
                         pass 
                     
@@ -768,9 +853,29 @@ def eliminar_paciente():
 
 def crear_lista_de_citas_dia():
     global citas,lista_medicos,hora_de_apertura,hora_de_cierre,duracion_en_minutos
-    if len(citas) > 0:
+    # valida que la configuracion haya sido completada antes de crear la lista
+    if duracion_en_minutos == 0:
+        print("DEBE HACER LA CONFIGURACION PRIMERO (opcion 1 del menu).")
+        return
+
+    # valida que existan medicos registrados antes de crear la lista
+    if len(lista_medicos) == 0:
+        print("NO HAY MEDICOS REGISTRADOS. REGISTRE AL MENOS UN MEDICO PRIMERO.")
+        return
+    
+    hay_agendadas = False
+    for cita in citas:
+        for horario in cita[1]:
+            if horario[1] > 0:
+                hay_agendadas = True
+                break
+        if hay_agendadas:
+            break
+
+    if hay_agendadas:
         print("NO SE PUEDE CREAR LA LISTA DE CITAS DEL DÍA DEBIDO A QUE HAY CITAS AGENDADAS. PARA CREAR LA LISTA PRIMERO DEBE CANCELAR ESAS CITAS. PUEDE EMITIR UN INFORME DE CITAS QUE LE SIRVA DE REFERENCIA PARA LUEGO HACER ESA CANCELACIÓN.")
-        return 
+        return
+    citas.clear()
 
     for medico in lista_medicos:
         hora_apertura = medico[7]
@@ -786,8 +891,13 @@ def crear_lista_de_citas_dia():
                 minutos -= 60
             hora_apertura = horas * 100 + minutos
         citas.append([medico[0],lista_horarios])
+    print("LISTA DE CITAS DEL DIA CREADA EXITOSAMENTE.")
+
 def pedir_citas():
     global lista_medicos, citas
+    if len(citas) == 0:
+        print("NO HAY LISTA DE CITAS CREADA. PRIMERO EJECUTE LA OPCION 4 DEL MENU.")
+        return
     print("    CLINICA MEDICA    ")
     print("    PEDIR CITAS       ") 
     print(f"{'Identificacion del medico':<30} {'Nombre'}")
@@ -905,6 +1015,29 @@ def pedir_citas():
                                         print("ESE HORARIO NO EXISTE.")
 
 
+def generar_pdf(titulo, lineas, nombre_archivo):
+    # Crea un documento PDF usando la biblioteca fpdf2
+    # titulo: encabezado del informe, lineas: lista de texto a escribir, nombre_archivo: nombre del PDF a guardar
+    pdf = FPDF()
+    pdf.add_page()  # agrega una pagina en blanco al documento
+
+    pdf.set_font("Helvetica", "B", 14)  # fuente en negrita para el titulo principal
+    pdf.cell(0, 10, "CLINICA MEDICA", ln=True, align="C")  # titulo centrado en la pagina
+
+    pdf.set_font("Helvetica", "B", 11)  # fuente ligeramente mas pequena para el subtitulo
+    pdf.cell(0, 8, titulo, ln=True, align="C")  # nombre del informe centrado
+
+    pdf.ln(4)  # espacio en blanco entre el encabezado y el contenido
+
+    pdf.set_font("Helvetica", size=9)  # fuente normal para el cuerpo del informe
+    for linea in lineas:
+        pdf.multi_cell(0, 6, linea)  # escribe cada linea; multi_cell hace salto de linea automatico si es muy larga
+
+    pdf.output(nombre_archivo)  # guarda el archivo PDF en disco con el nombre indicado
+    os.startfile(nombre_archivo)  # abre el PDF automaticamente con el visor predeterminado de Windows
+    print(f"PDF generado: {nombre_archivo}")
+
+
 def informes():
     while True:
         print("1. Informe de citas por medico") 
@@ -934,73 +1067,84 @@ def informes():
 
 
 def informe_citas_medico():
-    global citas, lista_medicos,lista_pacientes
+    global citas, lista_medicos, lista_pacientes
 
-
-    #crear una copia para lista medicos, para no modificarla directamente y que afecte el codigo entero
-
+    # copia para ordenar sin modificar la lista original
     copia_medicos = lista_medicos[:]
-    #ordenamiento burbuja
+    # ordenamiento burbuja por apellido1, apellido2, nombre
     for i in range(len(copia_medicos)):
-        for j in range(i+1,len(copia_medicos)):
+        for j in range(i+1, len(copia_medicos)):
             if copia_medicos[i][2] > copia_medicos[j][2]:
-                copia_medicos[i],copia_medicos[j] = copia_medicos[j],copia_medicos[i]#se realiza el intercambio
+                copia_medicos[i], copia_medicos[j] = copia_medicos[j], copia_medicos[i]
             elif copia_medicos[i][2] == copia_medicos[j][2]:
                 if copia_medicos[i][3] > copia_medicos[j][3]:
-                    copia_medicos[i],copia_medicos[j] = copia_medicos[j], copia_medicos[i]
+                    copia_medicos[i], copia_medicos[j] = copia_medicos[j], copia_medicos[i]
                 elif copia_medicos[i][3] == copia_medicos[j][3]:
                     if copia_medicos[i][1] > copia_medicos[j][1]:
-                        copia_medicos [i], copia_medicos[j] = copia_medicos[j], copia_medicos [i] 
+                        copia_medicos[i], copia_medicos[j] = copia_medicos[j], copia_medicos[i]
+
     while True:
         opcion = input("DESEA VER LA INFORMACION DE UNO O TODOS LOS MEDICOS: T = todos, U = uno, C para cancelar: ").upper()
-        
+
         if opcion == "U":
             try:
-                id_medico  = int(input("Ingrese la identificacion del medico: "))
+                id_medico = int(input("Ingrese la identificacion del medico: "))
             except ValueError:
                 print("DEBE INGRESAR UN DATO NUMERICO")
                 continue
-            filtro = input("Ver horarios: O =  solo los ocupados, T = todos ").upper()
+            filtro = input("Ver horarios: O = solo los ocupados, T = todos ").upper()
             encontrado = False
+            lineas = []  # lista donde se acumula el contenido del informe para el PDF
             for cita in citas:
                 if cita[0] == id_medico:
                     encontrado = True
-                    for medico in copia_medicos :
+                    for medico in copia_medicos:
                         if medico[0] == id_medico:
-                            print(f"Médico: {medico[1]} {medico[2]} {medico[3]}")
+                            lineas.append(f"Medico: {medico[1]} {medico[2]} {medico[3]}")
+                            lineas.append(f"{'HORARIO':<10} {'ID.PACIENTE':<15} NOMBRE DEL PACIENTE")
                             for horario in cita[1]:
-                                if filtro == "T" or horario[1]>0:
+                                if filtro == "T" or horario[1] > 0:
                                     hh = horario[0] // 100
                                     mm = horario[0] % 100
                                     if horario[1] > 0:
                                         for paciente in lista_pacientes:
                                             if paciente[0] == horario[1]:
-                                                print(f"  {hh:02d}:{mm:02d} — {paciente[1]} {paciente[2]} {paciente[3]}")
-                                    elif horario [1] == -1:
-                                        print(f"  {hh:02d}:{mm:02d}**")
+                                                lineas.append(f"{hh:02d}:{mm:02d}     {paciente[0]:<15} {paciente[1]} {paciente[2]} {paciente[3]}")
+                                    elif horario[1] == -1:
+                                        lineas.append(f"{hh:02d}:{mm:02d}**")
                                     elif horario[1] == 0:
-                                        print(f"  {hh:02d}:{mm:02d}")
+                                        lineas.append(f"{hh:02d}:{mm:02d}")
             if not encontrado:
                 print("EL MEDICO NO POSEE CITAS PARA MOSTRAR")
-                continue 
+                continue
+            for linea in lineas:  # muestra el informe en consola
+                print(linea)
+            generar_pdf("INFORME DE CITAS POR MEDICO", lineas, "informe_citas_medico.pdf")
+
         elif opcion == "T":
-            filtro = input("Ver horarios: O =  solo los ocupados, T = todos ").upper()
+            filtro = input("Ver horarios: O = solo los ocupados, T = todos ").upper()
+            lineas = []  # lista donde se acumula el contenido del informe para el PDF
             for cita in citas:
                 for medico in copia_medicos:
-                    if cita[0]==medico[0]:
-                        print(f"Medico: {medico[1]} {medico[2]} {medico[3]}")
+                    if cita[0] == medico[0]:
+                        lineas.append(f"Medico: {medico[1]} {medico[2]} {medico[3]}")
+                        lineas.append(f"{'HORARIO':<10} {'ID.PACIENTE':<15} NOMBRE DEL PACIENTE")
                         for horario in cita[1]:
-                            if filtro == "T" or horario[1] > 0  :
+                            if filtro == "T" or horario[1] > 0:
                                 hh = horario[0] // 100
                                 mm = horario[0] % 100
                                 if horario[1] > 0:
                                     for paciente in lista_pacientes:
-                                        if paciente[0] == horario[1]:                                
-                                            print(f"  {hh:02d}:{mm:02d} — {paciente[1]} {paciente[2]} {paciente[3]}")
+                                        if paciente[0] == horario[1]:
+                                            lineas.append(f"{hh:02d}:{mm:02d}     {paciente[0]:<15} {paciente[1]} {paciente[2]} {paciente[3]}")
                                 elif horario[1] == -1:
-                                    print(f"  {hh:02d}:{mm:02d}**")
+                                    lineas.append(f"{hh:02d}:{mm:02d}**")
                                 elif horario[1] == 0:
-                                    print(f"  {hh:02d}:{mm:02d}")
+                                    lineas.append(f"{hh:02d}:{mm:02d}")
+                        lineas.append("")  # linea en blanco entre medicos
+            for linea in lineas:  # muestra el informe en consola
+                print(linea)
+            generar_pdf("INFORME DE CITAS POR MEDICO", lineas, "informe_citas_medico.pdf")
 
         elif opcion == "C":
             break
@@ -1009,7 +1153,9 @@ def informe_citas_medico():
 
 
 def informe_citas_hora():
-    global citas, lista_medicos,lista_pacientes 
+    global citas, lista_medicos, lista_pacientes
+
+    # recopila todas las horas distintas que existen en las citas de todos los medicos
     horas_unicas = []
     for cita in citas:
         for horario in cita[1]:
@@ -1018,52 +1164,61 @@ def informe_citas_hora():
             for h in horas_unicas:
                 if h == hora:
                     encontrado = True
-                    break 
+                    break
             if not encontrado:
-                horas_unicas.append(hora) 
+                horas_unicas.append(hora)
+    # ordena las horas de menor a mayor (orden ascendente)
     for i in range(len(horas_unicas)):
         for j in range(i+1, len(horas_unicas)):
             if horas_unicas[i] > horas_unicas[j]:
-                horas_unicas[i],  horas_unicas[j] = horas_unicas[j],horas_unicas[i]
-    while True :
+                horas_unicas[i], horas_unicas[j] = horas_unicas[j], horas_unicas[i]
+
+    while True:
         opcion = input("DESEA VER LA INFORMACION POR HORARIO: T = todos, U = uno, C para cancelar: ").upper()
 
         if opcion == "U":
             try:
-                hora_buscada  = int(input("Ingrese la hora: "))
+                hora_buscada = int(input("Ingrese la hora: "))
             except ValueError:
                 print("DEBE INGRESAR UN DATO NUMERICO")
                 continue
-            filtro = input("Ver horarios: O =  solo los ocupados, T = todos ").upper()
+            filtro = input("Ver horarios: O = solo los ocupados, T = todos ").upper()
             encontrado = False
             hh = hora_buscada // 100
             mm = hora_buscada % 100
-            print (f"{hh:02d}:{mm:02d}")
+            lineas = []  # lista donde se acumula el contenido del informe para el PDF
+            lineas.append(f"HORARIO: {hh:02d}:{mm:02d}")
+            lineas.append(f"{'ID.MEDICO':<12} {'NOMBRE DEL MEDICO':<30} {'ID.PACIENTE':<12} NOMBRE DEL PACIENTE")
             for cita in citas:
                 for horario in cita[1]:
                     if horario[0] == hora_buscada:
-                        encontrado = True 
+                        encontrado = True
                         if filtro == "T" or horario[1] > 0:
                             for medico in lista_medicos:
                                 if medico[0] == cita[0]:
                                     if horario[1] > 0:
                                         for paciente in lista_pacientes:
                                             if paciente[0] == horario[1]:
-                                                print(f"  {medico[0]:<10} {medico[1]} {medico[2]} {medico[3]:<25} {paciente[0]:<10} {paciente[1]} {paciente[2]} {paciente[3]}")
+                                                lineas.append(f"{medico[0]:<12} {medico[1]} {medico[2]} {medico[3]:<30} {paciente[0]:<12} {paciente[1]} {paciente[2]} {paciente[3]}")
                                     elif horario[1] == -1:
-                                         print(f"** {medico[0]:<10} {medico[1]} {medico[2]} {medico[3]}")
+                                        lineas.append(f"** {medico[0]:<10} {medico[1]} {medico[2]} {medico[3]}")
                                     elif horario[1] == 0:
-                                        print(f" {medico[0]:<10} {medico[1]} {medico[2]} {medico[3]}")
+                                        lineas.append(f"{medico[0]:<12} {medico[1]} {medico[2]} {medico[3]}")
             if not encontrado:
                 print("Esa hora no existe en el sistema.")
                 continue
+            for linea in lineas:  # muestra el informe en consola
+                print(linea)
+            generar_pdf("INFORME DE CITAS POR HORA", lineas, "informe_citas_hora.pdf")
 
         elif opcion == "T":
-            filtro = input("Ver horarios: O =  solo los ocupados, T = todos ").upper()
+            filtro = input("Ver horarios: O = solo los ocupados, T = todos ").upper()
+            lineas = []  # lista donde se acumula el contenido del informe para el PDF
+            lineas.append(f"{'HORARIO':<10} {'ID.MEDICO':<12} {'NOMBRE DEL MEDICO':<30} {'ID.PACIENTE':<12} NOMBRE DEL PACIENTE")
             for hora_actual in horas_unicas:
-                hh = hora_actual // 100 
+                hh = hora_actual // 100
                 mm = hora_actual % 100
-                print(f"{hh:02d}:{mm:02d}")
+                lineas.append(f"{hh:02d}:{mm:02d}")
                 for cita in citas:
                     for horario in cita[1]:
                         if horario[0] == hora_actual:
@@ -1073,42 +1228,50 @@ def informe_citas_hora():
                                         if horario[1] > 0:
                                             for paciente in lista_pacientes:
                                                 if paciente[0] == horario[1]:
-                                                    print(f"  {medico[0]:<10} {medico[1]} {medico[2]} {medico[3]:<25} {paciente[0]:<10} {paciente[1]} {paciente[2]} {paciente[3]}")
+                                                    lineas.append(f"           {medico[0]:<12} {medico[1]} {medico[2]} {medico[3]:<30} {paciente[0]:<12} {paciente[1]} {paciente[2]} {paciente[3]}")
                                         elif horario[1] == -1:
-                                             print(f"** {medico[0]:<10} {medico[1]} {medico[2]} {medico[3]}")
+                                            lineas.append(f"**         {medico[0]:<12} {medico[1]} {medico[2]} {medico[3]}")
                                         elif horario[1] == 0:
-                                             print(f"{medico[0]:<10} {medico[1]} {medico[2]} {medico[3]}")
+                                            lineas.append(f"           {medico[0]:<12} {medico[1]} {medico[2]} {medico[3]}")
+                lineas.append("")  # linea en blanco entre horas
+            for linea in lineas:  # muestra el informe en consola
+                print(linea)
+            generar_pdf("INFORME DE CITAS POR HORA", lineas, "informe_citas_hora.pdf")
 
         elif opcion == "C":
             break
         else:
-            print("OPCION INVALIDA.") 
+            print("OPCION INVALIDA.")
 
 
 
 def informe_citas_paciente():
-    global citas, lista_medicos,lista_pacientes
-    copia_pacientes = lista_pacientes [:]
+    global citas, lista_medicos, lista_pacientes
+
+    # copia para ordenar sin modificar la lista original
+    copia_pacientes = lista_pacientes[:]
+    # ordenamiento burbuja por apellido1, apellido2, nombre
     for i in range(len(copia_pacientes)):
-        for j in range(i+1,len(copia_pacientes)):
+        for j in range(i+1, len(copia_pacientes)):
             if copia_pacientes[i][2] > copia_pacientes[j][2]:
                 copia_pacientes[i], copia_pacientes[j] = copia_pacientes[j], copia_pacientes[i]
-            elif copia_pacientes[i][2] == copia_pacientes[j] [2]:
-                if copia_pacientes[i][3]>copia_pacientes[j][3]:
-                      copia_pacientes[i], copia_pacientes[j] = copia_pacientes[j], copia_pacientes[i] 
-                elif copia_pacientes[i][3] == copia_pacientes[j] [3]:
+            elif copia_pacientes[i][2] == copia_pacientes[j][2]:
+                if copia_pacientes[i][3] > copia_pacientes[j][3]:
+                    copia_pacientes[i], copia_pacientes[j] = copia_pacientes[j], copia_pacientes[i]
+                elif copia_pacientes[i][3] == copia_pacientes[j][3]:
                     if copia_pacientes[i][1] > copia_pacientes[j][1]:
-                        copia_pacientes[i], copia_pacientes[j] = copia_pacientes[j],copia_pacientes[i]
-                        
+                        copia_pacientes[i], copia_pacientes[j] = copia_pacientes[j], copia_pacientes[i]
+
     while True:
         opcion = input("U = un paciente, T = todos, C = cancelar: ").upper()
         if opcion == "C":
             return
-    
+
         filtro = input("Desea buscar segun: H = horario especifico, T = todos los horarios: ").upper()
+        hora_buscada = 0  # se define aqui para evitar error si filtro no es H
         if filtro == "H":
             hora_buscada = int(input("Ingrese la hora que desea consultar (hhmm): "))
-    
+
         if opcion == "U":
             dato = input("Ingrese el id del paciente (C para cancelar): ").upper()
             if dato == "C":
@@ -1119,6 +1282,8 @@ def informe_citas_paciente():
                 print("DEBE SER UN DATO NUMERICO.")
                 continue
             encontrado = False
+            lineas = []  # lista donde se acumula el contenido del informe para el PDF
+            lineas.append(f"{'ID.PACIENTE':<12} {'NOMBRE DEL PACIENTE':<30} {'HORARIO':<10} {'ID.MEDICO':<12} NOMBRE DEL MEDICO")
             for cita in citas:
                 for horario in cita[1]:
                     if horario[1] == id_paciente:
@@ -1130,11 +1295,17 @@ def informe_citas_paciente():
                                     mm = horario[0] % 100
                                     for paciente in lista_pacientes:
                                         if paciente[0] == id_paciente:
-                                            print(f"{paciente[0]:<12} {paciente[1]} {paciente[2]} {paciente[3]:<25}  {hh:02d}:{mm:02d} {medico[0]:<10} {medico[1]} {medico[2]} {medico[3]}")
+                                            lineas.append(f"{paciente[0]:<12} {paciente[1]} {paciente[2]} {paciente[3]:<30} {hh:02d}:{mm:02d}     {medico[0]:<12} {medico[1]} {medico[2]} {medico[3]}")
             if not encontrado:
                 print("EL PACIENTE NO TIENE CITAS REGISTRADAS.")
+                continue
+            for linea in lineas:  # muestra el informe en consola
+                print(linea)
+            generar_pdf("INFORME DE CITAS POR PACIENTE", lineas, "informe_citas_paciente.pdf")
 
         elif opcion == "T":
+            lineas = []  # lista donde se acumula el contenido del informe para el PDF
+            lineas.append(f"{'ID.PACIENTE':<12} {'NOMBRE DEL PACIENTE':<30} {'HORARIO':<10} {'ID.MEDICO':<12} NOMBRE DEL MEDICO")
             for paciente in copia_pacientes:
                 for cita in citas:
                     for horario in cita[1]:
@@ -1143,9 +1314,11 @@ def informe_citas_paciente():
                                 for medico in lista_medicos:
                                     if medico[0] == cita[0]:
                                         hh = horario[0] // 100
-                                        mm = horario[0] % 100 
-                                        print(f"{paciente[0]:<12} {paciente[1]} {paciente[2]} {paciente[3]:<25}  {hh:02d}:{mm:02d} {medico[0]:<10} {medico[1]} {medico[2]} {medico[3]}")
-
+                                        mm = horario[0] % 100
+                                        lineas.append(f"{paciente[0]:<12} {paciente[1]} {paciente[2]} {paciente[3]:<30} {hh:02d}:{mm:02d}     {medico[0]:<12} {medico[1]} {medico[2]} {medico[3]}")
+            for linea in lineas:  # muestra el informe en consola
+                print(linea)
+            generar_pdf("INFORME DE CITAS POR PACIENTE", lineas, "informe_citas_paciente.pdf")
 
         else:
             print("OPCION INVALIDA.")
@@ -1169,21 +1342,23 @@ def estadistica_ocupacion():
             return   
         if opcion == "U":
             dato = input("Ingrese el id del medico (C para cancelar): ")
-            if dato  == "C":
+            if dato == "C":
                 continue
             try:
                 id_medico = int(dato)
             except ValueError:
-                print("DEBEN SER DATOS NUMERICOS.") 
-                continue 
+                print("DEBEN SER DATOS NUMERICOS.")
+                continue
             encontrado = False
+            lineas = []  # lista donde se acumula el contenido del informe para el PDF
+            lineas.append(f"{'ID.MEDICO':<10} {'NOMBRE DEL MEDICO':<30} {'DISPONIBLES':<13} {'OCUPADAS':<18} {'LIBRES':<12} RESERVADAS")
             for medico in copia_medicos:
                 if medico[0] == id_medico:
                     encontrado = True
-                    disponibles = 0 
-                    ocupadas = 0 
-                    libres = 0 
-                    reservadas = 0 
+                    disponibles = 0
+                    ocupadas = 0
+                    libres = 0
+                    reservadas = 0
                     for cita in citas:
                         if cita[0] == id_medico:
                             for horario in cita[1]:
@@ -1191,42 +1366,52 @@ def estadistica_ocupacion():
                                 if horario[1] > 0:
                                     ocupadas += 1
                                 elif horario[1] == 0:
-                                    libres+=1
+                                    libres += 1
                                 elif horario[1] == -1:
-                                    reservadas +=1
-                    if disponibles > 0:            
-                        porcentaje_ocupacion = (ocupadas/disponibles) * 100
+                                    reservadas += 1
+                    if disponibles > 0:
+                        porcentaje_ocupacion = (ocupadas / disponibles) * 100
                         porcentaje_libres = (libres / disponibles) * 100
                         porcentaje_reservadas = (reservadas / disponibles) * 100
-                        print(f"{medico[0]:<10} {medico[1]} {medico[2]} {medico[3]:<25} {disponibles:<14} {ocupadas} {porcentaje_ocupacion:.0f}%   {libres} {porcentaje_libres:.0f}%   {reservadas} {porcentaje_reservadas:.0f}%")
-                    else :
-                          print("EL MEDICO NO TIENE HORARIOS REGISTRADOS.")
+                        lineas.append(f"{medico[0]:<10} {medico[1]} {medico[2]} {medico[3]:<30} {disponibles:<13} {ocupadas} {porcentaje_ocupacion:.0f}%         {libres} {porcentaje_libres:.0f}%   {reservadas} {porcentaje_reservadas:.0f}%")
+                    else:
+                        print("EL MEDICO NO TIENE HORARIOS REGISTRADOS.")
             if not encontrado:
                 print("EL MEDICO NO ESTA REGISTRADO.")
                 continue
+            for linea in lineas:  # muestra el informe en consola
+                print(linea)
+            generar_pdf("ESTADISTICA DE OCUPACION POR MEDICO", lineas, "estadistica_ocupacion.pdf")
+
         elif opcion == "T":
+            lineas = []  # lista donde se acumula el contenido del informe para el PDF
+            lineas.append(f"{'ID.MEDICO':<10} {'NOMBRE DEL MEDICO':<30} {'DISPONIBLES':<13} {'OCUPADAS':<18} {'LIBRES':<12} RESERVADAS")
             for medico in copia_medicos:
-                disponibles = 0 
+                disponibles = 0
                 ocupadas = 0
-                libres = 0 
-                reservadas = 0 
+                libres = 0
+                reservadas = 0
                 for cita in citas:
                     if cita[0] == medico[0]:
                         for horario in cita[1]:
-                            disponibles +=1
+                            disponibles += 1
                             if horario[1] > 0:
-                                ocupadas+=1
-                            elif horario[1] == 0 :
-                                libres +=1
-                            elif horario[1]==-1:
-                                reservadas+=1
+                                ocupadas += 1
+                            elif horario[1] == 0:
+                                libres += 1
+                            elif horario[1] == -1:
+                                reservadas += 1
                 if disponibles > 0:
                     porcentaje_ocupacion = (ocupadas / disponibles) * 100
                     porcentaje_libres = (libres / disponibles) * 100
                     porcentaje_reservadas = (reservadas / disponibles) * 100
-                    print(f"{medico[0]:<10} {medico[1]} {medico[2]} {medico[3]:<25} {disponibles:<14} {ocupadas} {porcentaje_ocupacion:.0f}%   {libres} {porcentaje_libres:.0f}%   {reservadas} {porcentaje_reservadas:.0f}%")
+                    lineas.append(f"{medico[0]:<10} {medico[1]} {medico[2]} {medico[3]:<30} {disponibles:<13} {ocupadas} {porcentaje_ocupacion:.0f}%         {libres} {porcentaje_libres:.0f}%   {reservadas} {porcentaje_reservadas:.0f}%")
                 else:
-                    print(f"{medico[0]:<10} {medico[1]} {medico[2]} {medico[3]:<25} SIN HORARIOS REGISTRADOS.")
+                    lineas.append(f"{medico[0]:<10} {medico[1]} {medico[2]} {medico[3]:<30} SIN HORARIOS REGISTRADOS.")
+            for linea in lineas:  # muestra el informe en consola
+                print(linea)
+            generar_pdf("ESTADISTICA DE OCUPACION POR MEDICO", lineas, "estadistica_ocupacion.pdf")
+
         else:
             print("OPCION INVALIDA.")
 
@@ -1235,39 +1420,46 @@ def estadistica_ocupacion():
 
 
 def grafico_ocupacion_medico():
-    global lista_medicos,lista_pacientes,citas
+    # Genera un grafico circular (pie chart) de ocupacion de citas por medico
+    # El grafico se guarda como PDF usando matplotlib y se abre automaticamente
+    global lista_medicos, lista_pacientes, citas
+
+    # copia para ordenar sin modificar la lista original
     copia_medicos = lista_medicos[:]
-    for i in range (len(lista_medicos)):
-        for j in range(i+1,len(lista_medicos)):
+    # ordenamiento burbuja por apellido1, apellido2, nombre
+    for i in range(len(lista_medicos)):
+        for j in range(i+1, len(lista_medicos)):
             if copia_medicos[i][2] > copia_medicos[j][2]:
                 copia_medicos[i], copia_medicos[j] = copia_medicos[j], copia_medicos[i]
             elif copia_medicos[i][2] == copia_medicos[j][2]:
                 if copia_medicos[i][3] > copia_medicos[j][3]:
-                    copia_medicos[i] , copia_medicos[j] = copia_medicos[j],copia_medicos[i]
+                    copia_medicos[i], copia_medicos[j] = copia_medicos[j], copia_medicos[i]
                 elif copia_medicos[i][3] == copia_medicos[j][3]:
-                    if copia_medicos[i][1] >copia_medicos[j][1]:
-                        copia_medicos[i],copia_medicos[j] = copia_medicos[j], copia_medicos[i]
+                    if copia_medicos[i][1] > copia_medicos[j][1]:
+                        copia_medicos[i], copia_medicos[j] = copia_medicos[j], copia_medicos[i]
+
     while True:
         opcion = input("U = un medico, T = todos, C = cancelar: ").upper()
         if opcion == "C":
-            return   
+            return
+
         if opcion == "U":
             dato = input("Ingrese el id del medico (C para cancelar): ")
-            if dato  == "C":
+            if dato == "C":
                 continue
             try:
                 id_medico = int(dato)
             except ValueError:
-                print("DEBEN SER DATOS NUMERICOS.") 
-                continue 
+                print("DEBEN SER DATOS NUMERICOS.")
+                continue
             encontrado = False
             for medico in copia_medicos:
                 if medico[0] == id_medico:
                     encontrado = True
-                    disponibles = 0 
-                    ocupadas = 0 
-                    libres = 0 
-                    reservadas = 0 
+                    disponibles = 0
+                    ocupadas = 0
+                    libres = 0
+                    reservadas = 0
                     for cita in citas:
                         if cita[0] == id_medico:
                             for horario in cita[1]:
@@ -1275,53 +1467,70 @@ def grafico_ocupacion_medico():
                                 if horario[1] > 0:
                                     ocupadas += 1
                                 elif horario[1] == 0:
-                                    libres+=1
+                                    libres += 1
                                 elif horario[1] == -1:
-                                    reservadas +=1
-                    if disponibles > 0:            
-                        porcentaje_ocupacion = (ocupadas/disponibles) * 100
+                                    reservadas += 1
+                    if disponibles > 0:
+                        # se calculan los porcentajes para mostrar en el titulo del grafico
+                        porcentaje_ocupacion = (ocupadas / disponibles) * 100
                         porcentaje_libres = (libres / disponibles) * 100
                         porcentaje_reservadas = (reservadas / disponibles) * 100
-                        sizes = [ocupadas, libres, reservadas]
-                        labels = ['Citas ocupadas', 'Citas libres', 'Citas reservadas']
-                        colors = ['green', 'red', 'peachpuff']
+                        sizes = [ocupadas, libres, reservadas]  # valores de cada sector del grafico
+                        labels = ['Citas ocupadas', 'Citas libres', 'Citas reservadas']  # etiquetas del grafico
+                        colors = ['green', 'red', 'peachpuff']  # colores de cada sector
 
                         plt.figure()
-                        plt.pie(sizes, labels=labels, autopct='%1.1f%%', colors=colors)
+                        plt.pie(sizes, labels=labels, autopct='%1.1f%%', colors=colors)  # autopct muestra el porcentaje en cada sector
                         plt.title(f"Ocupacion para: {medico[2]} {medico[3]} {medico[1]}\nTotal de citas disponibles: {disponibles}")
+
+                        # nombre del PDF unico por medico usando su identificacion
+                        nombre_pdf = f"grafico_medico_{medico[0]}.pdf"
+                        # savefig guarda el grafico actual como archivo PDF antes de mostrarlo en pantalla
+                        plt.savefig(nombre_pdf, format="pdf", bbox_inches="tight")
+                        os.startfile(nombre_pdf)  # abre el PDF automaticamente con el visor de Windows
+                        print(f"PDF generado: {nombre_pdf}")
                         plt.show()
-                    else :
-                          print("EL MEDICO NO TIENE HORARIOS REGISTRADOS.")
+                    else:
+                        print("EL MEDICO NO TIENE HORARIOS REGISTRADOS.")
             if not encontrado:
                 print("EL MEDICO NO ESTA REGISTRADO.")
                 continue
+
         elif opcion == "T":
             for medico in copia_medicos:
-                disponibles = 0 
+                disponibles = 0
                 ocupadas = 0
-                libres = 0 
-                reservadas = 0 
+                libres = 0
+                reservadas = 0
                 for cita in citas:
                     if cita[0] == medico[0]:
                         for horario in cita[1]:
-                            disponibles +=1
+                            disponibles += 1
                             if horario[1] > 0:
-                                ocupadas+=1
-                            elif horario[1] == 0 :
-                                libres +=1
-                            elif horario[1]==-1:
-                                reservadas+=1
+                                ocupadas += 1
+                            elif horario[1] == 0:
+                                libres += 1
+                            elif horario[1] == -1:
+                                reservadas += 1
                 if disponibles > 0:
+                    # se calculan los porcentajes para mostrar en el titulo del grafico
                     porcentaje_ocupacion = (ocupadas / disponibles) * 100
                     porcentaje_libres = (libres / disponibles) * 100
                     porcentaje_reservadas = (reservadas / disponibles) * 100
-                    sizes = [ocupadas, libres, reservadas]
-                    labels = ['Citas ocupadas', 'Citas libres', 'Citas reservadas']
-                    colors = ['green', 'red', 'peachpuff']
+                    sizes = [ocupadas, libres, reservadas]  # valores de cada sector del grafico
+                    labels = ['Citas ocupadas', 'Citas libres', 'Citas reservadas']  # etiquetas del grafico
+                    colors = ['green', 'red', 'peachpuff']  # colores de cada sector
 
                     plt.figure()
-                    plt.pie(sizes, labels=labels, autopct='%1.1f%%', colors=colors)
+                    plt.pie(sizes, labels=labels, autopct='%1.1f%%', colors=colors)  # autopct muestra el porcentaje en cada sector
                     plt.title(f"Ocupacion para: {medico[2]} {medico[3]} {medico[1]}\nTotal de citas disponibles: {disponibles}")
+
+                    # nombre del PDF unico por medico usando su identificacion
+                    nombre_pdf = f"grafico_medico_{medico[0]}.pdf"
+                    # savefig guarda el grafico actual como archivo PDF antes de mostrarlo en pantalla
+                    plt.savefig(nombre_pdf, format="pdf", bbox_inches="tight")
+                    os.startfile(nombre_pdf)  # abre el PDF automaticamente con el visor de Windows
+                    print(f"PDF generado: {nombre_pdf}")
                     plt.show()
                 else:
                     print(f"{medico[1]} {medico[2]} {medico[3]} — SIN HORARIOS REGISTRADOS.")
@@ -1346,7 +1555,8 @@ def acerca_de():
     print("Fecha de creacion: 24/4/2026")
     print("Autor: Aldrickson Diaz Tijerino")
 
-
+if __name__ == "__main__":
+    menu()
 
 
 
