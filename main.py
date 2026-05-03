@@ -21,10 +21,7 @@ def menu():
         print ("7. Ayuda")
         print ("8. Acerca de")
         print ("0. Salir")
-        #Para aprender a como manejar errores de entrada de usuario
-        #Le pregunte a la herramenta de IA (claude) sobre una herramienta que me ayudara a manejar este tipo de errores
-        #En este caso que ocurre si el usuario escribe una letra en vez de un numero?
-        #Lo entendi y lo implemente en el menu principal 
+        # try/except atrapa el error si el usuario escribe texto en lugar de un numero
         try:
             opcion = int (input("Ingrese una opcion: "))
         except ValueError:
@@ -111,11 +108,11 @@ def configuracion():
         break  # duracion valida, sale de este loop
 
     
-    opcion = str(input("OPCION C-CANCELAR A-ACEPTAR")).upper() #sirve para detectar c o C lo descrubri investigando por internet 
+    opcion = str(input("OPCION C-CANCELAR A-ACEPTAR")).upper() # .upper() convierte la entrada a mayuscula para aceptar c o C
    
     match opcion:
         case "A":
-            opcion = input("AL ACEPTAR ESTA CONFIGURACIÓN BORRA LA LISTA DE CITAS QUE SE TENGA ACTUALMENTE. CONFIRMA LA ACEPTACIÓN (SI/NO)").upper()
+            opcion = input("AL ACEPTAR ESTA CONFIGURACION BORRA LA LISTA DE CITAS QUE SE TENGA ACTUALMENTE. CONFIRMA LA ACEPTACION (SI/NO)").upper()
             if opcion == "SI":
                 medicos_fuera_rango = []
                 for medico in lista_medicos:
@@ -126,7 +123,7 @@ def configuracion():
                     for m in medicos_fuera_rango:
                         print(f"{m[0]} {m[1]} {m[2]} {m[3]}")
                 else:
-                    citas.clear() #Para limppiar la funcion y eliminar los datos anteriores
+                    citas.clear() # borra la lista de citas existente antes de aplicar la nueva configuracion
                     hora_de_apertura = apertura
                     hora_de_cierre = cierre
                     duracion_en_minutos = duracion
@@ -134,7 +131,7 @@ def configuracion():
                 pass
 
         case "C":
-            pass #instruccion aprendida gracias a la IA claude, ya que dijo que en python debe haber al mennos una instrucion 
+            pass # pass es necesario porque case "C" no requiere hacer nada, pero el bloque no puede quedar vacio 
         case _:
             print ("Opcion invalida") 
 
@@ -250,7 +247,7 @@ def agregar_medico():
         if "@" in correo_electronico and "." in correo_electronico:
             break 
         else:
-            print("Correo inválido. Debe contener '@' y '.'  Ejemplo: nombre@dominio.com")
+            print("Correo invalido. Debe contener '@' y '.'  Ejemplo: nombre@dominio.com")
             continue 
     while True: 
         try:
@@ -289,13 +286,13 @@ def agregar_medico():
     medicos = (id_medico,nombre,apellido1,apellido2,numero_telefono,lugar_residencia,correo_electronico,hora_apertura,hora_cierre)
     print ("    REGISTRAR MEDICOS   ")
     print ("    AGREGAR MEDICOS     ")
-    print("Identificación del médico: ",id_medico)
+    print("Identificacion del medico: ",id_medico)
     print("Nombre: ",nombre)
     print("Apellido 1: ",apellido1)
     print("Apellido 2: ",apellido2)
-    print("Teléfono: ",numero_telefono)
+    print("Telefono: ",numero_telefono)
     print("Lugar de residencia: ",lugar_residencia)
-    print("Correo electrónico: ",correo_electronico)
+    print("Correo electronico: ",correo_electronico)
     print("Hora de apertura: ",hora_apertura)
     print("Hora de cierre: ",hora_cierre)
     while True:  # repite hasta que el usuario ingrese A o C correctamente
@@ -306,7 +303,7 @@ def agregar_medico():
         elif opcion_final == "C":
             return
         else:
-            print("Opción inválida, ingrese A para aceptar o C para cancelar.")
+            print("Opcion invalida, ingrese A para aceptar o C para cancelar.")
 
 
 def consultar_medico():
@@ -315,7 +312,7 @@ def consultar_medico():
     print ("    REGISTRAR MEDICOS   ")
     print ("    CONSULTAR MEDICOS    ") 
     while True:
-        dato = input("Identificación del médico (C para cancelar): ").upper()
+        dato = input("Identificacion del medico (C para cancelar): ").upper()
         if dato == "C":
             return
         try:
@@ -327,19 +324,19 @@ def consultar_medico():
         for medico in lista_medicos:
             if medico[0] == id_medico:
                encontrado = True
-               print("Identificación del médico: ",medico[0])
+               print("Identificacion del medico: ",medico[0])
                print("Nombre: ",medico[1])
                print("Apellido 1: ",medico[2])
                print("Apellido 2: ",medico[3])
-               print("Teléfono: ",medico[4])
+               print("Telefono: ",medico[4])
                print("Lugar de residencia: ",medico[5])
-               print("Correo electrónico: ",medico[6])
+               print("Correo electronico: ",medico[6])
                print("Hora de apertura: ",medico[7])
                print("Hora de cierre: ",medico[8])
                break 
 
         if not encontrado:
-            print ("EL MÉDICO NO ESTA REGISTRADO, NO SE PUEDE CONSULTAR")
+            print ("EL MEDICO NO ESTA REGISTRADO, NO SE PUEDE CONSULTAR")
             continue
         else:
             input("OPCION A-ACEPTAR ")
@@ -349,7 +346,7 @@ def modificar_medico():
     print ("    REGISTRAR MEDICOS   ")
     print ("    MODIFICAR MEDICOS    ")
     while True:
-        dato = input("Identificación del médico (C para cancelar): ").upper()
+        dato = input("Identificacion del medico (C para cancelar): ").upper()
         if dato == "C":
             return
         try:
@@ -394,7 +391,7 @@ def modificar_medico():
                     else:
                         print("El apellido debe tener entre 2 y 20 caracteres.")
 
-                print(f"Teléfono: {medico[4]}")
+                print(f"Telefono: {medico[4]}")
                 while True:
                     telefono = input("    MODIFICAR: ")
                     if telefono == "":
@@ -421,7 +418,7 @@ def modificar_medico():
                     else:
                         print("El lugar de residencia debe tener entre 5 y 50 caracteres.")
 
-                print(f"Correo electrónico: {medico[6]}")
+                print(f"Correo electronico: {medico[6]}")
                 while True:
                     correo_electronico = input("    MODIFICAR: ")
                     if correo_electronico == "":
@@ -487,7 +484,7 @@ def eliminar_medico():
     print("    REGISTRAR MEDICOS   ")
     print("    ELIMINAR MEDICOS    ")
     while True:
-        dato = input("Identificación del médico (C para cancelar): ").upper()
+        dato = input("Identificacion del medico (C para cancelar): ").upper()
         if dato == "C":
             return
         try:
@@ -499,19 +496,19 @@ def eliminar_medico():
         for medico in lista_medicos:
             if medico[0] == id_medico:
                 encontrado = True
-                print("Identificación del médico: ",medico[0])
+                print("Identificacion del medico: ",medico[0])
                 print("Nombre: ",medico[1])
                 print("Apellido 1: ",medico[2])
                 print("Apellido 2: ",medico[3])
-                print("Teléfono: ",medico[4])
+                print("Telefono: ",medico[4])
                 print("Lugar de residencia: ",medico[5])
-                print("Correo electrónico: ",medico[6])
+                print("Correo electronico: ",medico[6])
                 print("Hora de apertura: ",medico[7])
                 print("Hora de cierre: ",medico[8])
                 
                 opcion = input("OPCION C-CANCELAR A-ACEPTAR ").upper()
                 if opcion == "A":
-                    opcion2 = input("CONFIRMA LA ELIMINACIÓN (SI/NO)").upper()
+                    opcion2 = input("CONFIRMA LA ELIMINACION (SI/NO)").upper()
                     if opcion2 == "SI":
                         tiene_cita = False
                         for cita in citas:  # recorre todas las citas buscando las del medico
@@ -521,7 +518,7 @@ def eliminar_medico():
                                         tiene_cita = True
                                         break
                         if tiene_cita:  # la verificacion va FUERA del for, no dentro
-                            print("ESTE MÉDICO TIENE CITAS ASOCIADAS, NO SE PUEDE ELIMINAR.")
+                            print("ESTE MEDICO TIENE CITAS ASOCIADAS, NO SE PUEDE ELIMINAR.")
                         else:
                             lista_medicos.remove(medico)  # solo elimina si no tiene citas activas
                     if opcion2 == "NO":
@@ -532,7 +529,7 @@ def eliminar_medico():
                 break                        
         
         if not encontrado:
-            print("EL MÉDICO NO ESTA REGISTRADO, NO SE PUEDE ELIMINAR" )
+            print("EL MEDICO NO ESTA REGISTRADO, NO SE PUEDE ELIMINAR" )
             continue
     
 def registrar_pacientes():
@@ -647,20 +644,20 @@ def agregar_paciente():
         if "@" in correo_electronico and "." in correo_electronico:
             break 
         else:
-            print("Correo inválido. Debe contener '@' y '.'  Ejemplo: nombre@dominio.com")
+            print("Correo invalido. Debe contener '@' y '.'  Ejemplo: nombre@dominio.com")
             continue 
     
 
     pacientes = (id_paciente,nombre,apellido1,apellido2,numero_telefono,lugar_residencia,correo_electronico)
     print ("    REGISTRAR PACIENTES   ")
     print ("    AGREGAR PACIENTE     ")
-    print("Identificación del paciente: ",id_paciente)
+    print("Identificacion del paciente: ",id_paciente)
     print("Nombre: ",nombre)
     print("Apellido 1: ",apellido1)
     print("Apellido 2: ",apellido2)
-    print("Teléfono: ",numero_telefono)
+    print("Telefono: ",numero_telefono)
     print("Lugar de residencia: ",lugar_residencia)
-    print("Correo electrónico: ",correo_electronico)
+    print("Correo electronico: ",correo_electronico)
     while True:  # repite hasta que el usuario ingrese A o C correctamente
         opcion_final = input("OPCION C-CANCELAR A-ACEPTAR").upper()
         if opcion_final == "A":
@@ -669,7 +666,7 @@ def agregar_paciente():
         elif opcion_final == "C":
             return
         else:
-            print("Opción inválida, ingrese A para aceptar o C para cancelar.")
+            print("Opcion invalida, ingrese A para aceptar o C para cancelar.")
 
 def consultar_paciente():
     global lista_pacientes 
@@ -677,7 +674,7 @@ def consultar_paciente():
     print ("    REGISTRAR PACIENTES   ")
     print ("    CONSULTAR PACIENTE    ") 
     while True:
-        dato = input("Identificación del paciente (C para cancelar): ").upper()
+        dato = input("Identificacion del paciente (C para cancelar): ").upper()
         if dato == "C":
             return
         try:
@@ -689,13 +686,13 @@ def consultar_paciente():
         for paciente in lista_pacientes:
             if paciente[0] == id_paciente:
                encontrado = True
-               print("Identificación del paciente: ",paciente[0])
+               print("Identificacion del paciente: ",paciente[0])
                print("Nombre: ",paciente[1])
                print("Apellido 1: ",paciente[2])
                print("Apellido 2: ",paciente[3])
-               print("Teléfono: ",paciente[4])
+               print("Telefono: ",paciente[4])
                print("Lugar de residencia: ",paciente[5])
-               print("Correo electrónico: ",paciente[6])
+               print("Correo electronico: ",paciente[6])
                break 
 
         if not encontrado:
@@ -710,7 +707,7 @@ def modificar_paciente():
     print ("    REGISTRAR PACIENTES   ")
     print ("    MODIFICAR PACIENTES    ")
     while True:
-        dato = input("Identificación del paciente (C para cancelar): ").upper()
+        dato = input("Identificacion del paciente (C para cancelar): ").upper()
         if dato == "C":
             return
         try:
@@ -755,7 +752,7 @@ def modificar_paciente():
                     else:
                         print("El apellido debe tener entre 2 y 20 caracteres.")
 
-                print(f"Teléfono: {paciente[4]}")
+                print(f"Telefono: {paciente[4]}")
                 while True:
                     telefono = input("    MODIFICAR: ")
                     if telefono == "":
@@ -782,7 +779,7 @@ def modificar_paciente():
                     else:
                         print("El lugar de residencia debe tener entre 5 y 50 caracteres.")
 
-                print(f"Correo electrónico: {paciente[6]}")
+                print(f"Correo electronico: {paciente[6]}")
                 while True:
                     correo_electronico = input("    MODIFICAR: ")
                     if correo_electronico == "":
@@ -811,7 +808,7 @@ def modificar_paciente():
 def eliminar_paciente():
     global lista_pacientes, citas
     while True:
-        dato = input("Identificación del paciente (C para cancelar): ").upper()
+        dato = input("Identificacion del paciente (C para cancelar): ").upper()
         if dato == "C":
             return
         try:
@@ -823,17 +820,17 @@ def eliminar_paciente():
         for paciente in lista_pacientes:
             if paciente[0] == id_paciente:
                 encontrado = True
-                print("Identificación del paciente: ",paciente[0])
+                print("Identificacion del paciente: ",paciente[0])
                 print("Nombre: ",paciente[1])
                 print("Apellido 1: ",paciente[2])
                 print("Apellido 2: ",paciente[3])
-                print("Teléfono: ",paciente[4])
+                print("Telefono: ",paciente[4])
                 print("Lugar de residencia: ",paciente[5])
-                print("Correo electrónico: ",paciente[6])
+                print("Correo electronico: ",paciente[6])
                 
                 opcion = input("OPCION C-CANCELAR A-ACEPTAR ").upper()
                 if opcion == "A":
-                    opcion2 = input("CONFIRMA LA ELIMINACIÓN (SI/NO)").upper()
+                    opcion2 = input("CONFIRMA LA ELIMINACION (SI/NO)").upper()
                     if opcion2 == "SI":
                         tiene_cita = False
                         for cita in citas:
@@ -883,7 +880,7 @@ def crear_lista_de_citas_dia():
             break
 
     if hay_agendadas:
-        print("NO SE PUEDE CREAR LA LISTA DE CITAS DEL DÍA DEBIDO A QUE HAY CITAS AGENDADAS. PARA CREAR LA LISTA PRIMERO DEBE CANCELAR ESAS CITAS. PUEDE EMITIR UN INFORME DE CITAS QUE LE SIRVA DE REFERENCIA PARA LUEGO HACER ESA CANCELACIÓN.")
+        print("NO SE PUEDE CREAR LA LISTA DE CITAS DEL DIA DEBIDO A QUE HAY CITAS AGENDADAS. PARA CREAR LA LISTA PRIMERO DEBE CANCELAR ESAS CITAS. PUEDE EMITIR UN INFORME DE CITAS QUE LE SIRVA DE REFERENCIA PARA LUEGO HACER ESA CANCELACION.")
         return
     citas.clear()
 
@@ -933,7 +930,7 @@ def pedir_citas():
                     if cita[0] == opcion_medico:
                        
                         while True:
-                            print(f"Médico: {medico[0]} {medico[1]} {medico[2]} {medico[3]}")
+                            print(f"Medico: {medico[0]} {medico[1]} {medico[2]} {medico[3]}")
                             print("Horarios disponibles")
                             for horario in cita[1]:
                                 if horario [1] == 0:
@@ -991,7 +988,7 @@ def pedir_citas():
                                         if second_cita[0] != opcion_medico:
                                             for otro_medico in lista_medicos:
                                                 if otro_medico[0] == second_cita [0]:  
-                                                     print(f"Médico: {otro_medico[0]} {otro_medico[1]} {otro_medico[2]} {otro_medico[3]}")
+                                                     print(f"Medico: {otro_medico[0]} {otro_medico[1]} {otro_medico[2]} {otro_medico[3]}")
                                         opcion = input("Cancelar cita (s/n).").upper()
                                         if opcion == "S":
                                             for j in range(len(second_cita[1])):
@@ -1027,7 +1024,7 @@ def pedir_citas():
                                         print("ESE HORARIO NO EXISTE.")
 
         if not medico_encontrado:  # si el id no corresponde a ningun medico, avisa al usuario
-            print("EL MÉDICO NO ESTÁ REGISTRADO.")
+            print("EL MEDICO NO ESTA REGISTRADO.")
 
 
 def generar_pdf(titulo, lineas, nombre_archivo):
@@ -1058,8 +1055,8 @@ def informes():
         print("1. Informe de citas por medico") 
         print("2. Informe de citas por hora") 
         print("3. Informe de citas por paciente") 
-        print("4. Estadística de ocupación por médico ")     
-        print("5. Gráfico (circular) de ocupación por médico")    
+        print("4. Estadistica de ocupacion por medico ")     
+        print("5. Grafico (circular) de ocupacion por medico")    
         print("0. Salir")
         try:
             opcion = int(input("OPCION "))
