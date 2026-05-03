@@ -1,13 +1,51 @@
 import os
 import matplotlib.pyplot as plt
 from fpdf import FPDF
-#variables globales
-hora_de_apertura = 0 
-hora_de_cierre = 0 
-duracion_en_minutos= 0
-citas = []
-lista_medicos = [] 
-lista_pacientes = []
+
+# ---------- DATOS DE PRUEBA ----------
+# Estos datos estan aqui para facilitar las pruebas del sistema.
+# Se pueden eliminar antes de la entrega final si se desea empezar en blanco.
+
+hora_de_apertura = 800   # clinica abre a las 8:00
+hora_de_cierre   = 1700  # clinica cierra a las 17:00
+duracion_en_minutos = 30 # cada cita dura 30 minutos
+
+# (id, nombre, apellido1, apellido2, telefono, residencia, correo, hora_apertura, hora_cierre)
+lista_medicos = [
+    (101, "Carlos",  "Mora",    "Solano", 88887777, "San Jose", "cmora@clinica.com",  800, 1700),
+    (102, "Ana",     "Vega",    "Rojas",  77776666, "Heredia",  "avega@clinica.com",  900, 1600),
+    (103, "Roberto", "Campos",  "Nunez",  66669999, "Alajuela", "rcampos@clinica.com",800, 1200),
+]
+
+# (id, nombre, apellido1, apellido2, telefono, residencia, correo)
+lista_pacientes = [
+    (201, "Luis",   "Castro", "Jimenez", 66665555, "Alajuela", "lcastro@gmail.com"),
+    (202, "Maria",  "Arias",  "Lopez",   55554444, "Cartago",  "marias@gmail.com"),
+    (203, "Pedro",  "Gomez",  "Bravo",   44443333, "Limon",    "pgomez@gmail.com"),
+]
+
+# [id_medico, [(hora_hhmm, valor), ...]]  valor: 0=libre, -1=deshabilitado, >0=id_paciente
+# Los horarios siguen el intervalo de 30 minutos definido en duracion_en_minutos
+citas = [
+    [101, [
+        (800, 0),    (830, 0),    (900, 201),  (930, 0),
+        (1000, 202), (1030, 0),   (1100, 0),   (1130, -1),
+        (1200, 0),   (1230, 0),   (1300, 0),   (1330, 0),
+        (1400, 0),   (1430, 0),   (1500, 0),   (1530, 0),
+        (1600, 0),   (1630, 0),
+    ]],
+    [102, [
+        (900, 0),    (930, 203),  (1000, 0),   (1030, 0),
+        (1100, 0),   (1130, 0),   (1200, 0),   (1230, 0),
+        (1300, 0),   (1330, 0),   (1400, 0),   (1430, 0),
+        (1500, 0),   (1530, 0),
+    ]],
+    [103, [
+        (800, 0),    (830, 201),  (900, 0),    (930, 0),
+        (1000, 0),   (1030, 0),   (1100, 203), (1130, 0),
+    ]],
+]
+# ---------- FIN DATOS DE PRUEBA ----------
 
 def menu():
     while True:
@@ -1279,14 +1317,20 @@ def informe_citas_paciente():
         if opcion == "C":
             return
 
-        filtro = input("Desea buscar segun: H = horario especifico, T = todos los horarios: ").upper()
-        hora_buscada = 0  # se define aqui para evitar error si filtro no es H
-        if filtro == "H":
-            try:
-                hora_buscada = int(input("Ingrese la hora que desea consultar (hhmm): "))
-            except ValueError:
-                print("DEBE INGRESAR UN DATO NUMERICO.")
-                continue  # regresa al inicio del while, pide U/T/C de nuevo
+        # loop que repite hasta obtener un filtro valido (H o T)
+        while True:
+            filtro = input("Desea buscar segun: H = horario especifico, T = todos los horarios: ").upper()
+            if filtro == "T":
+                hora_buscada = 0
+                break
+            elif filtro == "H":
+                try:
+                    hora_buscada = int(input("Ingrese la hora que desea consultar (hhmm): "))
+                    break
+                except ValueError:
+                    print("DEBE INGRESAR UN DATO NUMERICO.")
+            else:
+                print("OPCION INVALIDA. Ingrese H o T.")
 
         if opcion == "U":
             dato = input("Ingrese el id del paciente (C para cancelar): ").upper()
@@ -1315,6 +1359,9 @@ def informe_citas_paciente():
             if not encontrado:
                 print("EL PACIENTE NO TIENE CITAS REGISTRADAS.")
                 continue
+            if len(lineas) == 1:  # solo tiene el encabezado, no hay datos para ese filtro
+                print("NO HAY CITAS EN ESE HORARIO.")
+                continue
             for linea in lineas:  # muestra el informe en consola
                 print(linea)
             generar_pdf("INFORME DE CITAS POR PACIENTE", lineas, "informe_citas_paciente.pdf")
@@ -1332,6 +1379,9 @@ def informe_citas_paciente():
                                         hh = horario[0] // 100
                                         mm = horario[0] % 100
                                         lineas.append(f"{paciente[0]:<12} {paciente[1]} {paciente[2]} {paciente[3]:<30} {hh:02d}:{mm:02d}     {medico[0]:<12} {medico[1]} {medico[2]} {medico[3]}")
+            if len(lineas) == 1:  # solo tiene el encabezado, ningun paciente tiene citas
+                print("NO HAY CITAS REGISTRADAS.")
+                continue
             for linea in lineas:  # muestra el informe en consola
                 print(linea)
             generar_pdf("INFORME DE CITAS POR PACIENTE", lineas, "informe_citas_paciente.pdf")
