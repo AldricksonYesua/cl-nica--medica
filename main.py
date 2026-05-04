@@ -1082,7 +1082,9 @@ def generar_pdf(titulo, lineas, nombre_archivo):
         linea_recortada = linea[:200]
         pdf.cell(ancho_pagina, 5, linea_recortada, new_x="LMARGIN", new_y="NEXT")
 
-    pdf.output(nombre_archivo)  # guarda el archivo PDF en disco con el nombre indicado
+    pdf_bytes = pdf.output()  # obtiene el contenido del PDF como bytes
+    with open(nombre_archivo, "wb") as f:  # escribe los bytes al archivo manualmente (evita problema de pathlib en Python 3.14)
+        f.write(pdf_bytes)
     os.startfile(nombre_archivo)  # abre el PDF automaticamente con el visor predeterminado de Windows
     print(f"PDF generado: {nombre_archivo}")
 
