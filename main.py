@@ -500,14 +500,17 @@ def modificar_medico():
                         except ValueError:
                             print("La hora debe ser numerica.")
                             hora_cierre = medico[8]
-                opcion = input ("OPCION C-CANCELAR A-ACEPTAR ").upper()
-                if opcion == "A":
-                    nueva_tupla = (id_medico,nuevo_nombre,nuevo_apellido1,nuevo_apellido2,telefono,residencia,correo_electronico,hora_apertura,hora_cierre)
-                    indice = lista_medicos.index(medico) 
-                    lista_medicos[indice] = nueva_tupla
-                if opcion == "C":
-
-                    pass
+                while True:  # repite hasta que el usuario ingrese A o C correctamente
+                    opcion_mod = input("OPCION C-CANCELAR A-ACEPTAR ").upper()
+                    if opcion_mod == "A":
+                        nueva_tupla = (id_medico,nuevo_nombre,nuevo_apellido1,nuevo_apellido2,telefono,residencia,correo_electronico,hora_apertura,hora_cierre)
+                        indice = lista_medicos.index(medico)
+                        lista_medicos[indice] = nueva_tupla
+                        break
+                    elif opcion_mod == "C":
+                        break
+                    else:
+                        print("Opcion invalida, ingrese A para aceptar o C para cancelar.")
         if not encontrado:
             print ("EL MEDICO NO ESTA REGISTRADO, NO SE PUEDE MODIFICAR")
             continue
@@ -821,14 +824,17 @@ def modificar_paciente():
                     else:
                         print("Correo invalido. Debe contener '@' y '.'  Ejemplo: nombre@dominio.com")
 
-                opcion = input ("OPCION C-CANCELAR A-ACEPTAR ").upper()  # .upper() para aceptar minusculas
-                if opcion == "A":
-                    nueva_tupla = (id_paciente,nuevo_nombre,nuevo_apellido1,nuevo_apellido2,telefono,residencia,correo_electronico)
-                    indice = lista_pacientes.index(paciente) 
-                    lista_pacientes[indice] = nueva_tupla
-                if opcion == "C":
-
-                    pass
+                while True:  # repite hasta que el usuario ingrese A o C correctamente
+                    opcion_mod = input("OPCION C-CANCELAR A-ACEPTAR ").upper()
+                    if opcion_mod == "A":
+                        nueva_tupla = (id_paciente,nuevo_nombre,nuevo_apellido1,nuevo_apellido2,telefono,residencia,correo_electronico)
+                        indice = lista_pacientes.index(paciente)
+                        lista_pacientes[indice] = nueva_tupla
+                        break
+                    elif opcion_mod == "C":
+                        break
+                    else:
+                        print("Opcion invalida, ingrese A para aceptar o C para cancelar.")
                 break
         if not encontrado:
             print ("EL PACIENTE NO ESTA REGISTRADO, NO SE PUEDE MODIFICAR")
@@ -1270,7 +1276,7 @@ def informe_citas_hora():
                                     elif horario[1] == 0:
                                         lineas.append(f"{medico[0]:<12} {medico[1]} {medico[2]} {medico[3]}")
             if not encontrado:
-                print("Esa hora no existe en el sistema.")
+                print("ESA HORA NO EXISTE EN EL SISTEMA.")
                 continue
             for linea in lineas:  # muestra el informe en consola
                 print(linea)
@@ -1303,6 +1309,9 @@ def informe_citas_hora():
                                         elif horario[1] == 0:
                                             lineas.append(f"           {medico[0]:<12} {medico[1]} {medico[2]} {medico[3]}")
                 lineas.append("")  # linea en blanco entre horas
+            if len(lineas) == 1:  # solo tiene el encabezado, no hay citas registradas
+                print("NO HAY CITAS REGISTRADAS.")
+                continue
             for linea in lineas:  # muestra el informe en consola
                 print(linea)
             generar_pdf("INFORME DE CITAS POR HORA", lineas, "informe_citas_hora.pdf")
