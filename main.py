@@ -2,52 +2,66 @@ import os
 import matplotlib.pyplot as plt
 from fpdf import FPDF
 
+# ---------- VARIABLES GLOBALES ----------
+hora_de_apertura = 0      # hora de apertura de la clinica en formato hhmm
+hora_de_cierre   = 0      # hora de cierre de la clinica en formato hhmm
+duracion_en_minutos = 0   # duracion de cada cita en minutos (15, 20 o 30)
+
+# (id, nombre, apellido1, apellido2, telefono, residencia, correo, hora_apertura, hora_cierre)
+lista_medicos = []         # lista de tuplas con los datos de cada medico registrado
+
+# (id, nombre, apellido1, apellido2, telefono, residencia, correo)
+lista_pacientes = []       # lista de tuplas con los datos de cada paciente registrado
+
+# [id_medico, [(hora_hhmm, valor), ...]]  valor: 0=libre, -1=deshabilitado, >0=id_paciente
+citas = []                 # lista de citas del dia por medico
+# ---------- FIN VARIABLES GLOBALES ----------
+
 # ---------- DATOS DE PRUEBA ----------
 # Estos datos estan aqui para facilitar las pruebas del sistema.
 # Se pueden eliminar antes de la entrega final si se desea empezar en blanco.
+hora_de_apertura = 800
+hora_de_cierre   = 1700
+duracion_en_minutos = 30
 
-hora_de_apertura = 800   # clinica abre a las 8:00
-hora_de_cierre   = 1700  # clinica cierra a las 17:00
-duracion_en_minutos = 30 # cada cita dura 30 minutos
-
-# (id, nombre, apellido1, apellido2, telefono, residencia, correo, hora_apertura, hora_cierre)
 lista_medicos = [
     (101, "Carlos",  "Mora",    "Solano", 88887777, "San Jose", "cmora@clinica.com",  800, 1700),
     (102, "Ana",     "Vega",    "Rojas",  77776666, "Heredia",  "avega@clinica.com",  900, 1600),
     (103, "Roberto", "Campos",  "Nunez",  66669999, "Alajuela", "rcampos@clinica.com",800, 1200),
 ]
 
-# (id, nombre, apellido1, apellido2, telefono, residencia, correo)
 lista_pacientes = [
     (201, "Luis",   "Castro", "Jimenez", 66665555, "Alajuela", "lcastro@gmail.com"),
     (202, "Maria",  "Arias",  "Lopez",   55554444, "Cartago",  "marias@gmail.com"),
     (203, "Pedro",  "Gomez",  "Bravo",   44443333, "Limon",    "pgomez@gmail.com"),
 ]
 
-# [id_medico, [(hora_hhmm, valor), ...]]  valor: 0=libre, -1=deshabilitado, >0=id_paciente
-# Los horarios siguen el intervalo de 30 minutos definido en duracion_en_minutos
 citas = [
     [101, [
-        (800, 0),    (830, 0),    (900, 201),  (930, 0),
-        (1000, 202), (1030, 0),   (1100, 0),   (1130, -1),
-        (1200, 0),   (1230, 0),   (1300, 0),   (1330, 0),
-        (1400, 0),   (1430, 0),   (1500, 0),   (1530, 0),
+        (800, 0),    (830, 201),  (900, 201),  (930, 0),
+        (1000, 202), (1030, 0),   (1100, 202), (1130, -1),
+        (1200, 0),   (1230, 203), (1300, 0),   (1330, -1),
+        (1400, 0),   (1430, 0),   (1500, 203), (1530, 0),
         (1600, 0),   (1630, 0),
     ]],
     [102, [
-        (900, 0),    (930, 203),  (1000, 0),   (1030, 0),
-        (1100, 0),   (1130, 0),   (1200, 0),   (1230, 0),
-        (1300, 0),   (1330, 0),   (1400, 0),   (1430, 0),
+        (900, 201),  (930, 0),    (1000, 202), (1030, -1),
+        (1100, 0),   (1130, 203), (1200, 0),   (1230, 0),
+        (1300, 202), (1330, 0),   (1400, 0),   (1430, -1),
         (1500, 0),   (1530, 0),
     ]],
     [103, [
-        (800, 0),    (830, 201),  (900, 0),    (930, 0),
-        (1000, 0),   (1030, 0),   (1100, 203), (1130, 0),
+        (800, 201),  (830, 0),    (900, 203),  (930, -1),
+        (1000, 0),   (1030, 202), (1100, 0),   (1130, 0),
     ]],
 ]
 # ---------- FIN DATOS DE PRUEBA ----------
 
 def menu():
+    # Muestra el menu principal con todas las opciones del sistema
+    # No necesita nada antes de ejecutarse, es la primera funcion que corre
+    # Segun el numero que ingrese el usuario llama a la funcion correspondiente
+    # Si el usuario escribe 0 el programa termina
     while True:
         print ("                  CLINICA MEDICA                ")
         print ("1. Configuracion")
@@ -93,6 +107,11 @@ def menu():
 
 
 def configuracion():
+    # Permite cambiar el horario de apertura, cierre y la duracion de cada cita
+    # No requiere datos previos para ejecutarse
+    # Si hay medicos registrados verifica que sus horarios queden dentro del nuevo horario de la clinica
+    # Si algun medico queda fuera del rango la operacion se cancela y se muestra cuales medicos son el problema
+    # Si se acepta borra la lista de citas existente y guarda la nueva configuracion
     global hora_de_apertura,hora_de_cierre,duracion_en_minutos,citas,lista_medicos
 
     print ("        CLINICA MEDICA      ")
@@ -175,6 +194,9 @@ def configuracion():
 
 
 def registrar_medicos():
+    # Muestra el submenu para gestionar medicos: agregar, consultar, modificar o eliminar
+    # No requiere nada antes de ejecutarse
+    # Dependiendo de la opcion elegida llama a la funcion correspondiente
     print ("         CLINICA MEDICA       ")
     print ("         REGISTRAR MEDICOS   ")
 
@@ -205,6 +227,12 @@ def registrar_medicos():
 
             
 def agregar_medico():
+    # Agrega un nuevo medico a la lista del sistema
+    # Antes de usarla debe estar configurado el horario de la clinica (hora de apertura y cierre)
+    # Pide todos los datos del medico uno por uno y los valida
+    # Verifica que el ID no este siendo usado por otro medico ni por un paciente
+    # El horario del medico debe estar dentro del horario de la clinica
+    # Al final muestra un resumen y pide confirmacion antes de guardar
     global lista_medicos,lista_pacientes,hora_de_apertura,hora_de_cierre
     while True:
         dato = input("Ingrese el numero de identificacion (C para cancelar): ").upper()
@@ -341,6 +369,9 @@ def agregar_medico():
 
 
 def consultar_medico():
+    # Busca un medico por su ID y muestra todos sus datos en pantalla
+    # Necesita que haya al menos un medico registrado en lista_medicos
+    # Si el ID no existe avisa y vuelve a preguntar
     global lista_medicos
 
     print ("    REGISTRAR MEDICOS   ")
@@ -376,6 +407,11 @@ def consultar_medico():
             input("OPCION A-ACEPTAR ")
 
 def modificar_medico():
+    # Permite cambiar los datos de un medico ya registrado
+    # Necesita que el medico exista en lista_medicos
+    # Si hay citas activas no deja cambiar el horario del medico
+    # Cada campo se puede dejar igual presionando Enter sin escribir nada
+    # Pide confirmacion antes de guardar los cambios
     global lista_medicos,citas
     print ("    REGISTRAR MEDICOS   ")
     print ("    MODIFICAR MEDICOS    ")
@@ -517,6 +553,10 @@ def modificar_medico():
         
 
 def eliminar_medico():
+    # Elimina un medico de la lista del sistema
+    # Necesita que el medico exista en lista_medicos
+    # Si el medico tiene citas con pacientes asignados no se puede eliminar
+    # Pide confirmacion doble antes de borrar
     global lista_medicos, citas
     print("    REGISTRAR MEDICOS   ")
     print("    ELIMINAR MEDICOS    ")
@@ -570,6 +610,9 @@ def eliminar_medico():
             continue
     
 def registrar_pacientes():
+    # Muestra el submenu para gestionar pacientes: agregar, consultar, modificar o eliminar
+    # No requiere nada antes de ejecutarse
+    # Dependiendo de la opcion elegida llama a la funcion correspondiente
     print ("         CLINICA MEDICA       ")
     print ("       REGISTRAR PACIENTES   ")
 
@@ -602,6 +645,11 @@ def registrar_pacientes():
 
 
 def agregar_paciente():
+    # Agrega un nuevo paciente a la lista del sistema
+    # No requiere configuracion previa para ejecutarse
+    # Pide todos los datos del paciente y los valida uno por uno
+    # Verifica que el ID no este siendo usado por otro paciente ni por un medico
+    # Al final muestra un resumen y pide confirmacion antes de guardar
     global lista_pacientes
     while True:
         dato = input("Ingrese el numero de identificacion (C para cancelar): ").upper()
@@ -703,7 +751,10 @@ def agregar_paciente():
             print("Opcion invalida, ingrese A para aceptar o C para cancelar.")
 
 def consultar_paciente():
-    global lista_pacientes 
+    # Busca un paciente por su ID y muestra todos sus datos en pantalla
+    # Necesita que haya al menos un paciente registrado en lista_pacientes
+    # Si el ID no existe avisa y vuelve a preguntar
+    global lista_pacientes
 
     print ("    REGISTRAR PACIENTES   ")
     print ("    CONSULTAR PACIENTE    ") 
@@ -737,6 +788,10 @@ def consultar_paciente():
 
 
 def modificar_paciente():
+    # Permite cambiar los datos de un paciente ya registrado
+    # Necesita que el paciente exista en lista_pacientes
+    # Cada campo se puede dejar igual presionando Enter sin escribir nada
+    # Pide confirmacion antes de guardar los cambios
     global lista_pacientes
     print ("    REGISTRAR PACIENTES   ")
     print ("    MODIFICAR PACIENTES    ")
@@ -843,6 +898,10 @@ def modificar_paciente():
 
 
 def eliminar_paciente():
+    # Elimina un paciente de la lista del sistema
+    # Necesita que el paciente exista en lista_pacientes
+    # Si el paciente tiene citas activas asignadas no se puede eliminar
+    # Pide confirmacion doble antes de borrar
     global lista_pacientes, citas
     while True:
         dato = input("Identificacion del paciente (C para cancelar): ").upper()
@@ -896,6 +955,12 @@ def eliminar_paciente():
 
 
 def crear_lista_de_citas_dia():
+    # Genera los horarios disponibles del dia para cada medico registrado
+    # Necesita que la configuracion este hecha (duracion distinta de 0)
+    # Necesita que haya al menos un medico registrado
+    # Si hay citas con pacientes asignados no permite crear la lista hasta cancelarlas
+    # Borra las citas anteriores y crea los nuevos slots segun el horario de cada medico
+    # Al terminar muestra todos los horarios generados por medico
     global citas,lista_medicos,hora_de_apertura,hora_de_cierre,duracion_en_minutos
     # valida que la configuracion haya sido completada antes de crear la lista
     if duracion_en_minutos == 0:
@@ -936,8 +1001,24 @@ def crear_lista_de_citas_dia():
             hora_apertura = horas * 100 + minutos
         citas.append([medico[0],lista_horarios])
     print("LISTA DE CITAS DEL DIA CREADA EXITOSAMENTE.")
+    print("")
+    for cita in citas:  # muestra los horarios creados para cada medico
+        for medico in lista_medicos:
+            if medico[0] == cita[0]:
+                print(f"MEDICO {medico[0]} {medico[2]} {medico[3]} {medico[1]}")
+        for horario in cita[1]:  # imprime cada slot generado
+            hh = horario[0] // 100
+            mm = horario[0] % 100
+            print(f"  {hh:02d}:{mm:02d} - LIBRE")
+        print("")
 
 def pedir_citas():
+    # Permite asignar citas a pacientes, cancelarlas o deshabilitar horarios
+    # Necesita que la lista de citas del dia este creada (opcion 4 del menu)
+    # Necesita que los pacientes esten registrados para poder asignarles una cita
+    # Muestra los medicos disponibles y sus horarios libres
+    # Si el paciente ya tiene cita da la opcion de cancelarla antes de asignar una nueva
+    # Si se ingresa -1 como ID se puede habilitar o deshabilitar un horario especifico
     global lista_medicos, citas
     if len(citas) == 0:
         print("NO HAY LISTA DE CITAS CREADA. PRIMERO EJECUTE LA OPCION 4 DEL MENU.")
@@ -951,9 +1032,9 @@ def pedir_citas():
     print(F"{'0':<30} Salir")
 
     while True:
-        opcion = input ("Medico seleccionado: ")
-        if opcion == "0":
-            return 
+        opcion = input ("Medico seleccionado (0 o C para salir): ")
+        if opcion == "0" or opcion.upper() == "C":
+            return
         try:
             opcion_medico = int(opcion)
         except ValueError:
@@ -979,7 +1060,7 @@ def pedir_citas():
                                     horas = horario[0] // 100
                                     minutos = horario [0] % 100
                                     print(f"{horas:02d}:{minutos:02d}**")
-                            print("Salir")
+                            print("C - Cancelar")
                             dato = input("Identificacion del paciente: ").upper()
                             if dato == "C":
                                 break
@@ -1066,6 +1147,10 @@ def pedir_citas():
 
 
 def generar_pdf(titulo, lineas, nombre_archivo):
+    # Recibe un titulo, una lista de lineas de texto y un nombre de archivo
+    # Crea el PDF en orientacion horizontal para que las tablas no se corten
+    # La llaman internamente las funciones de informes, no el usuario directamente
+    # Al terminar guarda el PDF y lo abre automaticamente con el visor de Windows
     # Crea un documento PDF usando la biblioteca fpdf2
     # titulo: encabezado del informe, lineas: lista de texto a escribir, nombre_archivo: nombre del PDF a guardar
     pdf = FPDF(orientation="L")  # orientacion horizontal para que las tablas con muchas columnas no se corten
@@ -1096,6 +1181,9 @@ def generar_pdf(titulo, lineas, nombre_archivo):
 
 
 def informes():
+    # Muestra el submenu de informes y estadisticas del sistema
+    # Para la mayoria de los informes necesita que la lista de citas este creada
+    # Dependiendo de la opcion elige entre informe por medico, hora, paciente, estadistica o grafico
     while True:
         print("1. Informe de citas por medico") 
         print("2. Informe de citas por hora") 
@@ -1126,6 +1214,12 @@ def informes():
 
 
 def informe_citas_medico():
+    # Genera un informe de citas ordenado por medico
+    # Necesita que la lista de citas este creada y que haya medicos registrados
+    # Permite ver un medico especifico o todos los medicos
+    # Permite filtrar por citas ocupadas solamente o ver todos los horarios
+    # Ordena los medicos por apellido usando burbuja antes de mostrarlos
+    # Al final genera un PDF con el informe y lo abre automaticamente
     global citas, lista_medicos, lista_pacientes
 
     # copia para ordenar sin modificar la lista original
@@ -1220,6 +1314,12 @@ def informe_citas_medico():
 
 
 def informe_citas_hora():
+    # Genera un informe de citas agrupado por horario
+    # Necesita que la lista de citas este creada con horarios registrados
+    # Permite consultar una hora especifica o todas las horas del dia
+    # Permite filtrar por citas ocupadas o ver todos los horarios
+    # Ordena las horas de menor a mayor usando burbuja
+    # Al final genera un PDF con el informe y lo abre automaticamente
     global citas, lista_medicos, lista_pacientes
 
     # recopila todas las horas distintas que existen en las citas de todos los medicos
@@ -1324,6 +1424,12 @@ def informe_citas_hora():
 
 
 def informe_citas_paciente():
+    # Genera un informe de citas agrupado por paciente
+    # Necesita que haya citas con pacientes asignados para mostrar datos utiles
+    # Permite consultar un paciente especifico o todos los pacientes
+    # Permite filtrar por un horario especifico o ver todas las citas
+    # Ordena los pacientes por apellido usando burbuja antes de mostrarlos
+    # Al final genera un PDF con el informe y lo abre automaticamente
     global citas, lista_medicos, lista_pacientes
 
     # copia para ordenar sin modificar la lista original
@@ -1418,6 +1524,11 @@ def informe_citas_paciente():
             print("OPCION INVALIDA.")
         
 def estadistica_ocupacion():
+    # Muestra cuantas citas estan ocupadas, libres y reservadas por medico con porcentajes
+    # Necesita que la lista de citas este creada
+    # Permite ver un medico especifico o todos los medicos
+    # Ordena los medicos por apellido usando burbuja antes de mostrarlos
+    # Al final genera un PDF con la estadistica y lo abre automaticamente
     global lista_medicos,lista_pacientes,citas
     copia_medicos = lista_medicos[:]
     for i in range (len(lista_medicos)):
@@ -1514,8 +1625,12 @@ def estadistica_ocupacion():
 
 
 def grafico_ocupacion_medico():
-    # Genera un grafico circular (pie chart) de ocupacion de citas por medico
-    # El grafico se guarda como PDF usando matplotlib y se abre automaticamente
+    # Genera un grafico circular (pie chart) mostrando ocupacion, citas libres y reservadas
+    # Necesita que la lista de citas este creada con horarios registrados
+    # Permite graficar un medico especifico o todos uno por uno
+    # Ordena los medicos por apellido usando burbuja antes de procesarlos
+    # Solo incluye en el grafico las categorias que tienen al menos una cita (evita etiquetas encimadas)
+    # Guarda cada grafico como PDF con el nombre grafico_medico_{id}.pdf y lo abre automaticamente
     global lista_medicos, lista_pacientes, citas
 
     # copia para ordenar sin modificar la lista original
@@ -1569,9 +1684,15 @@ def grafico_ocupacion_medico():
                         porcentaje_ocupacion = (ocupadas / disponibles) * 100
                         porcentaje_libres = (libres / disponibles) * 100
                         porcentaje_reservadas = (reservadas / disponibles) * 100
-                        sizes = [ocupadas, libres, reservadas]  # valores de cada sector del grafico
-                        labels = ['Citas ocupadas', 'Citas libres', 'Citas reservadas']  # etiquetas del grafico
-                        colors = ['green', 'red', 'peachpuff']  # colores de cada sector
+                        # filtra categorias con valor 0 para evitar etiquetas encimadas en el grafico
+                        datos = [(v, l, c) for v, l, c in zip(
+                            [ocupadas, libres, reservadas],
+                            ['Citas ocupadas', 'Citas libres', 'Citas reservadas'],
+                            ['red', 'green', 'peachpuff']  # ocupadas=rojo, libres=verde, reservadas=durazno
+                        ) if v > 0]
+                        sizes  = [d[0] for d in datos]
+                        labels = [d[1] for d in datos]
+                        colors = [d[2] for d in datos]
 
                         plt.figure()
                         plt.pie(sizes, labels=labels, autopct='%1.1f%%', colors=colors)  # autopct muestra el porcentaje en cada sector
@@ -1634,10 +1755,17 @@ def grafico_ocupacion_medico():
 
 
 def ayuda():
+    # Abre el manual de usuario del sistema en formato PDF
+    # Necesita que el archivo manual_de_usuario_clinica_medica.pdf este en la misma carpeta que el programa
+    # Si el archivo no existe muestra un mensaje de error en lugar de crashear
+    print("    CLINICA MEDICA    ")
+    print("    AYUDA             ")
     try:
         os.startfile("manual_de_usuario_clinica_medica.pdf")  # abre el manual con el visor PDF del sistema
+        print("El manual de usuario ha sido desplegado.")
     except FileNotFoundError:
         print("NO SE ENCONTRO EL ARCHIVO manual_de_usuario_clinica_medica.pdf")
+    input("Presione Enter para volver al menu principal...")
 
 
 
@@ -1646,7 +1774,8 @@ def ayuda():
 
 
 def acerca_de():
-    # Muestra informacion general del programa
+    # Muestra la informacion general del programa: nombre, version, fecha y autor
+    # No necesita nada antes de ejecutarse
     print("CLINICA MEDICA")
     print("Version: 1.0")
     print("Fecha de creacion: 24/4/2026")
