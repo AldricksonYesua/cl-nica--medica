@@ -17,46 +17,6 @@ lista_pacientes = []       # lista de tuplas con los datos de cada paciente regi
 citas = []                 # lista de citas del dia por medico
 # ---------- FIN VARIABLES GLOBALES ----------
 
-# ---------- DATOS DE PRUEBA ----------
-# Estos datos estan aqui para facilitar las pruebas del sistema.
-# Se pueden eliminar antes de la entrega final si se desea empezar en blanco.
-hora_de_apertura = 800
-hora_de_cierre   = 1700
-duracion_en_minutos = 30
-
-lista_medicos = [
-    (101, "Carlos",  "Mora",    "Solano", 88887777, "San Jose", "cmora@clinica.com",  800, 1700),
-    (102, "Ana",     "Vega",    "Rojas",  77776666, "Heredia",  "avega@clinica.com",  900, 1600),
-    (103, "Roberto", "Campos",  "Nunez",  66669999, "Alajuela", "rcampos@clinica.com",800, 1200),
-]
-
-lista_pacientes = [
-    (201, "Luis",   "Castro", "Jimenez", 66665555, "Alajuela", "lcastro@gmail.com"),
-    (202, "Maria",  "Arias",  "Lopez",   55554444, "Cartago",  "marias@gmail.com"),
-    (203, "Pedro",  "Gomez",  "Bravo",   44443333, "Limon",    "pgomez@gmail.com"),
-]
-
-citas = [
-    [101, [
-        (800, 0),    (830, 201),  (900, 201),  (930, 0),
-        (1000, 202), (1030, 0),   (1100, 202), (1130, -1),
-        (1200, 0),   (1230, 203), (1300, 0),   (1330, -1),
-        (1400, 0),   (1430, 0),   (1500, 203), (1530, 0),
-        (1600, 0),   (1630, 0),
-    ]],
-    [102, [
-        (900, 201),  (930, 0),    (1000, 202), (1030, -1),
-        (1100, 0),   (1130, 203), (1200, 0),   (1230, 0),
-        (1300, 202), (1330, 0),   (1400, 0),   (1430, -1),
-        (1500, 0),   (1530, 0),
-    ]],
-    [103, [
-        (800, 201),  (830, 0),    (900, 203),  (930, -1),
-        (1000, 0),   (1030, 202), (1100, 0),   (1130, 0),
-    ]],
-]
-# ---------- FIN DATOS DE PRUEBA ----------
-
 def menu():
     # Muestra el menu principal con todas las opciones del sistema
     # No necesita nada antes de ejecutarse, es la primera funcion que corre
