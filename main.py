@@ -1556,7 +1556,7 @@ def estadistica_ocupacion():
                 continue
             encontrado = False
             lineas = []  # lista donde se acumula el contenido del informe para el PDF
-            lineas.append(f"{'ID.MEDICO':<10} {'NOMBRE DEL MEDICO':<30} {'DISPONIBLES':<13} {'OCUPADAS':<18} {'LIBRES':<12} RESERVADAS")
+            lineas.append(f"{'ID.MEDICO':<10} {'NOMBRE DEL MEDICO':<30} {'DISPONIBLES':<13} {'OCUPADAS':<12} {'LIBRES':<12} RESERVADAS")
             for medico in copia_medicos:
                 if medico[0] == id_medico:
                     encontrado = True
@@ -1578,7 +1578,10 @@ def estadistica_ocupacion():
                         porcentaje_ocupacion = (ocupadas / disponibles) * 100
                         porcentaje_libres = (libres / disponibles) * 100
                         porcentaje_reservadas = (reservadas / disponibles) * 100
-                        lineas.append(f"{medico[0]:<10} {(medico[2]+' '+medico[3]+' '+medico[1]):<30} {disponibles:<13} {ocupadas} {porcentaje_ocupacion:.0f}%         {libres} {porcentaje_libres:.0f}%   {reservadas} {porcentaje_reservadas:.0f}%")
+                        ocup_str = f"{ocupadas} {porcentaje_ocupacion:.0f}%"  # texto con ancho fijo para columna
+                        libr_str = f"{libres} {porcentaje_libres:.0f}%"  # texto con ancho fijo para columna
+                        res_str = f"{reservadas} {porcentaje_reservadas:.0f}%"  # texto con ancho fijo para columna
+                        lineas.append(f"{medico[0]:<10} {(medico[2]+' '+medico[3]+' '+medico[1]):<30} {disponibles:<13} {ocup_str:<12} {libr_str:<12} {res_str}")
                     else:
                         print("EL MEDICO NO TIENE HORARIOS REGISTRADOS.")
             if not encontrado:
@@ -1590,7 +1593,7 @@ def estadistica_ocupacion():
 
         elif opcion == "T":
             lineas = []  # lista donde se acumula el contenido del informe para el PDF
-            lineas.append(f"{'ID.MEDICO':<10} {'NOMBRE DEL MEDICO':<30} {'DISPONIBLES':<13} {'OCUPADAS':<18} {'LIBRES':<12} RESERVADAS")
+            lineas.append(f"{'ID.MEDICO':<10} {'NOMBRE DEL MEDICO':<30} {'DISPONIBLES':<13} {'OCUPADAS':<12} {'LIBRES':<12} RESERVADAS")
             for medico in copia_medicos:
                 disponibles = 0
                 ocupadas = 0
@@ -1610,7 +1613,10 @@ def estadistica_ocupacion():
                     porcentaje_ocupacion = (ocupadas / disponibles) * 100
                     porcentaje_libres = (libres / disponibles) * 100
                     porcentaje_reservadas = (reservadas / disponibles) * 100
-                    lineas.append(f"{medico[0]:<10} {(medico[2]+' '+medico[3]+' '+medico[1]):<30} {disponibles:<13} {ocupadas} {porcentaje_ocupacion:.0f}%         {libres} {porcentaje_libres:.0f}%   {reservadas} {porcentaje_reservadas:.0f}%")
+                    ocup_str = f"{ocupadas} {porcentaje_ocupacion:.0f}%"  # texto con ancho fijo para columna
+                    libr_str = f"{libres} {porcentaje_libres:.0f}%"  # texto con ancho fijo para columna
+                    res_str = f"{reservadas} {porcentaje_reservadas:.0f}%"  # texto con ancho fijo para columna
+                    lineas.append(f"{medico[0]:<10} {(medico[2]+' '+medico[3]+' '+medico[1]):<30} {disponibles:<13} {ocup_str:<12} {libr_str:<12} {res_str}")
                 else:
                     lineas.append(f"{medico[0]:<10} {(medico[2]+' '+medico[3]+' '+medico[1]):<30} SIN HORARIOS REGISTRADOS.")
             for linea in lineas:  # muestra el informe en consola
@@ -1675,7 +1681,7 @@ def grafico_ocupacion_medico():
                                 disponibles += 1
                                 if horario[1] > 0:
                                     ocupadas += 1
-                                elif horario[1] == 0:
+                                elif horario[1] == 0: 
                                     libres += 1
                                 elif horario[1] == -1:
                                     reservadas += 1
@@ -1688,7 +1694,7 @@ def grafico_ocupacion_medico():
                         datos = [(v, l, c) for v, l, c in zip(
                             [ocupadas, libres, reservadas],
                             ['Citas ocupadas', 'Citas libres', 'Citas reservadas'],
-                            ['red', 'green', 'peachpuff']  # ocupadas=rojo, libres=verde, reservadas=durazno
+                            ['green', 'red', 'peachpuff']  # ocupadas=verde, libres=rojo, reservadas=durazno
                         ) if v > 0]
                         sizes  = [d[0] for d in datos]
                         labels = [d[1] for d in datos]
@@ -1732,9 +1738,15 @@ def grafico_ocupacion_medico():
                     porcentaje_ocupacion = (ocupadas / disponibles) * 100
                     porcentaje_libres = (libres / disponibles) * 100
                     porcentaje_reservadas = (reservadas / disponibles) * 100
-                    sizes = [ocupadas, libres, reservadas]  # valores de cada sector del grafico
-                    labels = ['Citas ocupadas', 'Citas libres', 'Citas reservadas']  # etiquetas del grafico
-                    colors = ['green', 'red', 'peachpuff']  # colores de cada sector
+                    # filtra categorias con valor 0 para evitar etiquetas encimadas en el grafico
+                    datos = [(v, l, c) for v, l, c in zip(
+                        [ocupadas, libres, reservadas],
+                        ['Citas ocupadas', 'Citas libres', 'Citas reservadas'],
+                        ['red', 'green', 'peachpuff']  # ocupadas=rojo, libres=verde, reservadas=durazno
+                    ) if v > 0]
+                    sizes  = [d[0] for d in datos]
+                    labels = [d[1] for d in datos]
+                    colors = [d[2] for d in datos]
 
                     plt.figure()
                     plt.pie(sizes, labels=labels, autopct='%1.1f%%', colors=colors)  # autopct muestra el porcentaje en cada sector
@@ -1767,7 +1779,7 @@ def ayuda():
         print("NO SE ENCONTRO EL ARCHIVO manual_de_usuario_clinica_medica.pdf")
     input("Presione Enter para volver al menu principal...")
 
-
+ 
 
 
 
@@ -1783,16 +1795,4 @@ def acerca_de():
 
 if __name__ == "__main__":
     menu()
-
-
-
-                            
-                        
-
-
-
-
-    
-
-        
-
+ 
